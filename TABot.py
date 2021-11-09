@@ -113,8 +113,12 @@ class MyClient(discord.Client):
                 len(response_list))])
 
         elif (message.content.startswith(self._8_BALL_ADD_CMD)):
-            self.user_added.append(message.content[len(self._8_BALL_ADD_CMD):])
-            await message.channel.send("Response added!")
+            if (message.content[len(self._8_BALL_ADD_CMD):] == ""):
+                await message.channel.send("No response argument present: please put the desired response after a space after 8!add")
+            else:
+                self.user_added.append(
+                    message.content[len(self._8_BALL_ADD_CMD):])
+                await message.channel.send("Response added!")
 
         elif (message.content.startswith(self._8_BALL_REM_CMD)):
             try:
