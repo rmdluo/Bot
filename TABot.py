@@ -6,12 +6,16 @@ from discord.ext import tasks
 import MACDTrader
 
 #parameters
-PRODUCTS = ["ETH-USD", "LRC-USD", "MATIC-USD", "ENJ-USD"]
+PRODUCTS = []
 
 
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        with open("products.txt", "r") as input:
+            for line in input:
+                PRODUCTS.append(line.strip("\n"))
 
         self.trader = MACDTrader.MACDTrader(products=PRODUCTS)
 
@@ -27,7 +31,12 @@ class MyClient(discord.Client):
             "Don't count on it", "My reply is no", "My sources say no",
             "Outlook not so good", "Very doubtful", "No"
         ]
+
         self.user_added = []
+
+        with open("responses.txt", "r") as input:
+            for line in input:
+                self.user_added.append(line.strip("\n"))
 
         self._8_BALL_ADD_CMD = "8!add"
         self._8_BALL_REM_CMD = "8!rem"
@@ -69,6 +78,8 @@ class MyClient(discord.Client):
                 )
             except ValueError:
                 await message.channel.send("Invalid product")
+            except Exception:
+                await message.channel.send("Product already added!")
 
         elif (message.content.startswith('$signal remove')
               or message.content.startswith("$signal rem")):
@@ -114,17 +125,34 @@ class MyClient(discord.Client):
 
         elif (message.content.startswith(self._8_BALL_ADD_CMD)):
             if (message.content[len(self._8_BALL_ADD_CMD):] == ""):
-                await message.channel.send("No response argument present: please put the desired response after a space after 8!add")
+                await message.channel.send(
+                    "No response argument present: please put the desired response after a space after 8!add"
+                )
             else:
-                self.user_added.append(
-                    message.content[len(self._8_BALL_ADD_CMD):])
+                response = message.content[len(self._8_BALL_ADD_CMD):]
+                self.user_added.append(response)
                 await message.channel.send("Response added!")
+
+                f = open("responses.txt", "a")
+
+                f.write(response + "\n")
+
+                f.close()
 
         elif (message.content.startswith(self._8_BALL_REM_CMD)):
             try:
-                self.user_added.remove(
-                    message.content[len(self._8_BALL_REM_CMD):])
+                response = message.content[len(self._8_BALL_REM_CMD):]
+                self.user_added.remove(response)
+
                 await message.channel.send("Response removed!")
+
+                with open("products.txt", "r") as input:
+                    with open("temp.txt", "w") as output:
+                        # iterate all lines from file
+                        for line in input:
+                            # if text matches then don't write it
+                            if line.strip("\n") != response:
+                                output.write(line)
             except ValueError:
                 await message.channel.send(
                     "You are trying to remove a preset response or your response was never added"

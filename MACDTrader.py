@@ -1,5 +1,6 @@
 import pandas_ta as ta
 import yfinance as yf
+import os
 
 class MACDTrader:
     def __init__(self, products, fast=12, slow=26, signal=9,
@@ -54,10 +55,10 @@ class MACDTrader:
               macd_diff_2 = macd2 - macds2
 
               if(self.product_trades[product] == "closed" and macd_diff_1 > 0 and macd_diff_2 < 0 and macd1 < 0 and price > ema):
-                  self.product_trades[product] == "open"
+                  self.product_trades[product] = "open"
                   signals.append("Buy:"+ product)
               elif(self.product_trades[product] == "open" and macd_diff_1 < 0 and macd_diff_2 > 0 and macd1 > 0):
-                  self.product_trades[product] == "closed"
+                  self.product_trades[product] = "closed"
                   signals.append("Sell:"+ product)
 
         return signals
@@ -66,15 +67,33 @@ class MACDTrader:
         if(yf.download(tickers = product, period = self.period, interval = self.interval).empty):
             raise(ValueError)
         else:
-            self.products.append(product)
-            self.product_trades[product] = "closed"
+            if(product in self.products):
+                raise(Exception)
+            else:
+                self.products.append(product)
+                self.product_trades[product] = "closed"
+                
+                f = open("products.txt", "a")
 
+                f.write(product + "\n")
 
+                f.close()
 
     def remove_product(self, product):
         try:
             self.products.remove(product)
             self.product_trades.pop(product)
+
+            with open("products.txt", "r") as input:
+                with open("temp.txt", "w") as output:
+                 # iterate all lines from file
+                    for line in input:
+                     # if text matches then don't write it
+                         if line.strip("\n") != product:
+                              output.write(line)
+
+            # replace file with original name
+            os.replace('temp.txt', 'products.txt')
         except ValueError:
             raise(ValueError)
         except KeyError:
