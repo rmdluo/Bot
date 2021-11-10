@@ -57,7 +57,7 @@ class MACDTrader:
               if(self.product_trades[product] == "closed" and macd_diff_1 > 0 and macd_diff_2 < 0 and macd1 < 0 and price > ema):
                   self.product_trades[product] = "open"
                   signals.append("Buy:"+ product)
-              elif(self.product_trades[product] == "open" and macd_diff_1 < 0 and macd_diff_2 > 0 and macd1 > 0):
+              elif(self.product_trades[product] == "open" and macd_diff_1 < 0 and macd_diff_2 > 0):
                   self.product_trades[product] = "closed"
                   signals.append("Sell:"+ product)
 
