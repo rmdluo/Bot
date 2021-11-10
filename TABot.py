@@ -175,5 +175,5 @@ class MyClient(discord.Client):
         #****start Weather commands****
         elif(message.content.startswith("?weather")):
             payload={"q":"College Park", "appid":os.environ["weather_key"]}
-            weather_req = requests.get("api.openweathermap.org/data/2.5/weather?", params = payload)
+            weather_req = requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload)
             await message.channel.send(json.dumps(weather_req.json()))
