@@ -5,3 +5,4 @@ Werkzeug==2.0.1
 click==7.1.2
 pandas-ta==0.3.14b0
 yfinance==0.1.64
+requests==2.26.0
