@@ -2,6 +2,8 @@ import os
 import random
 import discord
 from discord.ext import tasks
+import requests
+import json
 
 import MACDTrader
 
@@ -169,3 +171,8 @@ class MyClient(discord.Client):
             await message.channel.send(str)
 
         #****end 8Ball Commands****
+        
+        #****start Weather commands****
+        elif(message.content.startswith("?weather")):
+            weather_req = requests.get("api.openweathermap.org/data/2.5/weather", q="College Park", appid=os.environ["weather_key"])
+            await message.channel.send(json.dumps(weather_req))
