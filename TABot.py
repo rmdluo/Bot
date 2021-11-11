@@ -202,7 +202,7 @@ class MyClient(discord.Client):
                     self.saved_locations[location[0]] = location[1]
                     
                     with open('saved_locations.txt', 'w') as f:
-                        f.write(location + "\n")
+                        f.write(location[0] + "=" + location[1] + "\n")
                     
                     await message.channel.send("Location saved!")
             except IndexError:
