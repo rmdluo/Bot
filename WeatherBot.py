@@ -68,7 +68,7 @@ class WeatherBot():
     
     #returns json data for city and state in US
     def get_current_weather(city, state):
-        payload = {"q":city+","+"US-"self.us_state_to_abbrev[state], "appid":self.api_key, "units":"imperial"}
+        payload = {"q":city+","+"US-"+(self.us_state_to_abbrev[state].lower()), "appid":self.api_key, "units":"imperial"}
         return format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload))
     
     def format_weather_json(weather_json):
