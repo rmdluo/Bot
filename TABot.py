@@ -251,7 +251,7 @@ class MyClient(discord.Client):
                     await message.channel.send(location)
                     
                     try:
-                        location = message.content[len(self._WEATHER_CMD):].split(",")
+                        location = location.split(",")
                         await message.channel.send("```" + self.weather.get_current_weather(location[0].strip(), location[1].strip()) + "```")
                     except IndexError:
                         await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
