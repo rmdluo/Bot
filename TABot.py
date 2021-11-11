@@ -280,5 +280,5 @@ class MyClient(discord.Client):
         #****end Weather commands****
 
         elif(message.content==self._HELP_CMD):
-            self.embed(message.channel)
+            await self.embed(message.channel)
             
