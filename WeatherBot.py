@@ -69,13 +69,17 @@ class WeatherBot {
     #returns json data for city and state in US
     def get_current_weather(city, state):
         payload = {"q":city+","+"US-"self.us_state_to_abbrev[state], "appid":self.api_key, "units":"imperial"}
-        return requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload)
+        return format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload))
     
     def format_weather_json(weather_json):
         str = "__Weather in " + weather_json["name"] + "__\n"
-            + "Temperature: " + str(weather_json["main"]["temp"]) + "\n"
-            + "Feels like: " + str(weather_json["main"]["feels_like"]) + "\n"
+            + "Temperature: " + str(weather_json["main"]["temp"]) + '\u00b0'+ " F\n"
+            + "Feels like: " + str(weather_json["main"]["feels_like"]) + '\u00b0'+ " F\n"
             + "Humidity: " + str(weather_json["main"]["humidity"]) + "%\n"
-            
+            + "Cloudiness/rain: " + weather_json["weather"]["main"] + " - " + weather_json["weather"]["description"] + "\n"
+            + "Wind: " + weather_json["wind"]["speed"] + " MPH, " weather_json["wind"]["deg"] + '\u00b0\ + "\n"
+            + "Wind gusts: " + weather_json["wind"]["gust"] + "MPH"
+        
+        return str
         
 }
