@@ -91,3 +91,9 @@ class WeatherBot():
         
         return weather_str
         
+    def save_location(self, location):
+        f = open("saved_locations.txt", "a")
+
+        f.write(location + "\n")
+
+        f.close()
