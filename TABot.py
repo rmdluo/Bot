@@ -199,8 +199,9 @@ class MyClient(discord.Client):
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
                     
-                    async with aiofiles.open('saved_locations.txt', mode='w') as f:
+                    async with aiofiles.open('saved_locations.txt', mode='a') as f:
                         await f.write(location[0] + "=" + location[1] + "\n")
+                        print("saved")
                     
                     await message.channel.send("Location saved!")
             except IndexError:
