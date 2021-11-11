@@ -201,7 +201,8 @@ class MyClient(discord.Client):
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
                     
-                    self.weather.save_location(location)
+                    with open('saved_locations.txt', 'w') as f:
+                        f.write(location + "\n")
                     
                     await message.channel.send("Location saved!")
             except IndexError:
