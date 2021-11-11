@@ -246,7 +246,7 @@ class MyClient(discord.Client):
                 if(location == ""):
                     await message.channel.send("No location entered!")
                 elif(location in self.saved_locations.keys()):
-                    await message.channel.send("```" + self.weather.get_current_weather(self.saved_locations[location]) + "```")
+                    location = self.saved_locations[location]
                     
                     try:
                         location = message.content[len(self._WEATHER_CMD):].split(",")
