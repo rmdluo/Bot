@@ -90,10 +90,3 @@ class WeatherBot():
             + "Wind: " + str(weather_json['wind']['speed']) + " MPH, " + str(weather_json['wind']['deg']) + '\u00b0'
         
         return weather_str
-        
-    def save_location(self, location):
-        f = open("saved_locations.txt", "a")
-
-        f.write(location + "\n")
-
-        f.close()
