@@ -44,6 +44,8 @@ class MyClient(discord.Client):
         self._8_BALL_REM_CMD = "8!rem"
         self._8_BALL_RESPONSES_CMD = "8!responses"
         self._8_BALL_BALL_CMD = "8!ball"
+        
+        self._WEATHER_CMD = "?weather"
 
         self.trader_signals.start()
 
@@ -173,7 +175,6 @@ class MyClient(discord.Client):
         #****end 8Ball Commands****
         
         #****start Weather commands****
-        elif(message.content.startswith("?weather")):
-            payload={"q":"College Park", "appid":os.environ["weather_key"]}
-            weather_req = requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload)
-            await message.channel.send(json.dumps(weather_req.json()))
+        elif(message.content.startswith(self._WEATHER_CMD)):
+            location = message.content[len(self._WEATHER_CMD):].split(", ")
+            await message.channel.send("```" + get_current_weather(location[0], location[1]) + "```")
