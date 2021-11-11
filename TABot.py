@@ -6,19 +6,17 @@ from discord.ext import tasks
 import MACDTrader
 import WeatherBot
 
-#parameters
-PRODUCTS = []
-
-
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.products = []
 
         with open("products.txt", "r") as input:
             for line in input:
-                PRODUCTS.append(line.strip("\n"))
+                self.products.append(line.strip("\n"))
 
-        self.trader = MACDTrader.MACDTrader(products=PRODUCTS)
+        self.trader = MACDTrader.MACDTrader(products=self.products)
         
         self.weather = WeatherBot.WeatherBot()
         
