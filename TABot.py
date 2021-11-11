@@ -2,6 +2,7 @@ import os
 import random
 import discord
 from discord.ext import tasks
+import aiofiles
 
 import MACDTrader
 import WeatherBot
@@ -149,11 +150,8 @@ class MyClient(discord.Client):
                 self.user_added.append(response)
                 await message.channel.send("Response added!")
 
-                f = open("responses.txt", "a")
-
-                f.write(response + "\n")
-
-                f.close()
+                async with aiofiles.open('responses.txt', mode='w') as f:
+                        await f.write(response + "\n")
 
         elif (message.content.startswith(self._8_BALL_REM_CMD)):
             try:
@@ -201,8 +199,8 @@ class MyClient(discord.Client):
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
                     
-                    with open('saved_locations.txt', 'w') as f:
-                        f.write(location[0] + "=" + location[1] + "\n")
+                    async with aiofiles.open('saved_locations.txt', mode='w') as f:
+                        await f.write(location[0] + "=" + location[1] + "\n")
                     
                     await message.channel.send("Location saved!")
             except IndexError:
