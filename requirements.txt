@@ -7,3 +7,4 @@ pandas-ta==0.3.14b0
 yfinance==0.1.64
 requests==2.26.0
 aiofiles==0.7.0
+redis==3.5.3
