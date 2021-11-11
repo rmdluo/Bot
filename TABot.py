@@ -242,6 +242,8 @@ class MyClient(discord.Client):
             except IndexError:
                 location = message.content[len(self._WEATHER_CMD):].strip()
                 
+                print(location)
+                
                 if(location == ""):
                     await message.channel.send("No location entered!")
                 elif(location in self.saved_locations.keys()):
