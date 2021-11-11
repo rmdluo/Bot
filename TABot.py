@@ -178,4 +178,4 @@ class MyClient(discord.Client):
         #****start Weather commands****
         elif(message.content.startswith(self._WEATHER_CMD)):
             location = message.content[len(self._WEATHER_CMD):].split(", ")
-            await message.channel.send(">>> " + self.weather.get_current_weather(location[0], location[1]))
+            await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
