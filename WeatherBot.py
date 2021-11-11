@@ -67,25 +67,22 @@ class WeatherBot():
         self.api_key = os.environ["weather_key"]
     
     #returns json data for city and state in US
-    def get_current_weather(city, state):
+    def get_current_weather(self, city, state):
         payload = {}
         try:
             payload = {"q":city+","+"US-"+(self.us_state_to_abbrev[state].lower()), "appid":self.api_key, "units":"imperial"}
         except KeyError:
             payload = {"q":city+","+"US-"+state, "appid":self.api_key, "units":"imperial"}
-        return format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload))
+        return self.format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload).json())
     
-    def format_weather_json(weather_json):
-        str = weather_json["name"]
-        """
-            "__Weather in " + weather_json["name"] + "__\n" \
-            + "Temperature: " + str(weather_json["main"]["temp"]) + '\u00b0'+ " F\n" \
-            + "Feels like: " + str(weather_json["main"]["feels_like"]) + '\u00b0'+ " F\n" \
-            + "Humidity: " + str(weather_json["main"]["humidity"]) + "%\n" \
-            + "Cloudiness/rain: " + weather_json["weather"]["main"] + " - " + weather_json["weather"]["description"] + "\n" \
-            + "Wind: " + weather_json["wind"]["speed"] + " MPH, " weather_json["wind"]["deg"] + '\u00b0\ + "\n" \
-            + "Wind gusts: " + weather_json["wind"]["gust"] + "MPH"
-        """
+    def format_weather_json(self, weather_json):
+        weather_str = "__Weather in " + weather_json['name'] + "__\n" \
+            + "Temperature: " + str(weather_json['main']['temp']) + '\u00b0'+ " F\n" \
+            + "Feels like: " + str(weather_json['main']['feels_like']) + '\u00b0'+ " F\n" \
+            + "Humidity: " + str(weather_json['main']['humidity']) + "%\n" \
+            + "Cloudiness/rain: " + weather_json['weather'][0]['main'] + " - " + weather_json['weather'][0]['description'] + "\n" \
+            + "Wind: " + str(weather_json['wind']['speed']) + " MPH, " + str(weather_json['wind']['deg']) + '\u00b0' + "\n" \
+            + "Wind gusts: " + str(weather_json['wind']['gust']) + "MPH"
         
-        return str
+        return weather_str
         
