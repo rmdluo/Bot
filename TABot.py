@@ -246,3 +246,6 @@ class MyClient(discord.Client):
                     await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
 
         #****end Weather commands****
+
+        else:
+            await message.channel.send("Undefined command: check !help")
