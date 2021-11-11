@@ -76,12 +76,12 @@ class WeatherBot():
         return format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload))
     
     def format_weather_json(weather_json):
-        str = "__Weather in " + weather_json["name"] + "__\n"
-            + "Temperature: " + str(weather_json["main"]["temp"]) + '\u00b0'+ " F\n"
-            + "Feels like: " + str(weather_json["main"]["feels_like"]) + '\u00b0'+ " F\n"
-            + "Humidity: " + str(weather_json["main"]["humidity"]) + "%\n"
-            + "Cloudiness/rain: " + weather_json["weather"]["main"] + " - " + weather_json["weather"]["description"] + "\n"
-            + "Wind: " + weather_json["wind"]["speed"] + " MPH, " weather_json["wind"]["deg"] + '\u00b0\ + "\n"
+        str = "__Weather in " + weather_json["name"] + "__\n" \
+            + "Temperature: " + str(weather_json["main"]["temp"]) + '\u00b0'+ " F\n" \
+            + "Feels like: " + str(weather_json["main"]["feels_like"]) + '\u00b0'+ " F\n" \
+            + "Humidity: " + str(weather_json["main"]["humidity"]) + "%\n" \
+            + "Cloudiness/rain: " + weather_json["weather"]["main"] + " - " + weather_json["weather"]["description"] + "\n" \
+            + "Wind: " + weather_json["wind"]["speed"] + " MPH, " weather_json["wind"]["deg"] + '\u00b0\ + "\n" \
             + "Wind gusts: " + weather_json["wind"]["gust"] + "MPH"
         
         return str
