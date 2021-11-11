@@ -93,6 +93,12 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
 
     #****end MACDTrader functions****
+    
+    #****help functions****
+    @self.command()
+    async def embed(self, channel):
+        embed=discord.Embed(title="Sample Embed", url="https://github.com/rmdluo/TABot/", description="This is an embed that will show how to build an embed and the different components", color=discord.Color.blurple())
+        await channel.send(embed=embed)
 
     async def on_message(self, message):
 
@@ -275,4 +281,5 @@ class MyClient(discord.Client):
         #****end Weather commands****
 
         elif(message.content==self._HELP_CMD):
-            await message.channel.send("help")
+            self.embed(message.channel)
+            
