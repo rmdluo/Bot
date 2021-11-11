@@ -235,7 +235,7 @@ class MyClient(discord.Client):
             for key in self.saved_locations:
                 saved = saved + key + " = " + self.saved_locations[key] + "\n"
             
-            if(saved == "):
+            if(saved == ""):
                 await message.channel.send("No saved locations :eyes:")
             else:
                 await message.channel.send(saved)
