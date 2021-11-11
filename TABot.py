@@ -21,6 +21,13 @@ class MyClient(discord.Client):
         self.trader = MACDTrader.MACDTrader(products=PRODUCTS)
         
         self.weather = WeatherBot.WeatherBot()
+        
+        self.saved_locations = {}
+        
+        with open("saved_locations.txt", "r") as input:
+            for line in input:
+                line_info = line.strip().split(" ") 
+                self.saved_locations[line_info[0]] = line_info[1]
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -47,6 +54,9 @@ class MyClient(discord.Client):
         self._8_BALL_BALL_CMD = "8!ball "
         
         self._WEATHER_CMD = "?weather "
+        self._WEATHER_SAVE_CMD = "?weather save "
+        self._WEATHER_DELETE_CMD = "?weather delete "
+        self._WEATHER_SAVED_CMD = "?weather check saved"
 
         self.trader_signals.start()
 
@@ -126,7 +136,8 @@ class MyClient(discord.Client):
                 response_list = self.user_added
 
             await message.channel.send(response_list[random.randrange(
-                len(response_list))])
+                len(response_list))]
+            )
 
         elif (message.content.startswith(self._8_BALL_ADD_CMD)):
             if (message.content[len(self._8_BALL_ADD_CMD):] == ""):
@@ -177,5 +188,59 @@ class MyClient(discord.Client):
         
         #****start Weather commands****
         elif(message.content.startswith(self._WEATHER_CMD)):
-            location = message.content[len(self._WEATHER_CMD):].split(", ")
-            await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
+            try:
+                location = message.content[len(self._WEATHER_CMD):].split(", ")
+                await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
+            except IndexError:
+                location = message.content[len(self._WEATHER_CMD):]
+                
+                if(location == ""):
+                    await message.channel.send("No location entered!")
+                else:
+                    await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
+            
+        elif(message.content.startswith(self._WEATHER_SAVE_CMD)):
+            try:
+                if (message.content[len(self._WEATHER_SAVE_CMD):] == ""):
+                    await message.channel.send(
+                        "No response argument present: please put the desired response after a space after 8!add"
+                    )
+                else:
+                    location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
+                    self.saved_locations[location[0]] = location[1]
+                    await message.channel.send("Location saved!")
+
+                    f = open("saved_locations.txt", "a")
+
+                    f.write(location[0].strip() + "=" + location[1].strip() + "\n")
+
+                    f.close()
+            except IndexError:
+                await message.channel.send("Enter arguments as save_name=location")
+            
+                
+        elif(message.content.startswith(self._WEATHER_DELETE_CMD)):
+            try:
+                location = message.content[len(self._WEATHER_DELETE_CMD):]
+                self.saved_locations.pop(location)
+
+                await message.channel.send("Location deleted!")
+
+                with open("saved_locations.txt", "r") as input:
+                    with open("temp.txt", "w") as output:
+                        # iterate all lines from file
+                        for line in input:
+                            # if text matches then don't write it
+                            if not (location in line):
+                                output.write(line)
+            except KeyError:
+                await message.channel.send(
+                    "Location never saved :("
+                )
+                
+        elif(message.content.startswith(self._WEATHER_SAVED_CMD)):
+            saved = ""
+            for key in self.saved_locations:
+                saved = saved + key + " = " + self.saved_locations[key] + "\n"
+            
+            await message.channel.send(saved)
