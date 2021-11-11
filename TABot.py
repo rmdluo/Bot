@@ -15,7 +15,7 @@ class MyClient(discord.Client):
         
         self.products = []
 
-        if(self.r.exists("products"):
+        if(self.r.exists("products")):
             self.products = self.r.lrange("products", 0, -1)
         
         for index in range(len(self.products)):
@@ -45,7 +45,7 @@ class MyClient(discord.Client):
         
         self.user_added = []
 
-        if(self.r.exists("user_added)):
+        if(self.r.exists("user_added")):
             self.user_added = self.r.lrange("user_added", 0, -1)
         
         for index in range(len(self.user_added)):
