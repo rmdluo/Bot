@@ -2,8 +2,6 @@ import os
 import random
 import discord
 from discord.ext import tasks
-import requests
-import json
 
 import MACDTrader
 import WeatherBot
@@ -43,12 +41,12 @@ class MyClient(discord.Client):
             for line in input:
                 self.user_added.append(line.strip("\n"))
 
-        self._8_BALL_ADD_CMD = "8!add"
-        self._8_BALL_REM_CMD = "8!rem"
-        self._8_BALL_RESPONSES_CMD = "8!responses"
-        self._8_BALL_BALL_CMD = "8!ball"
+        self._8_BALL_ADD_CMD = "8!add "
+        self._8_BALL_REM_CMD = "8!rem "
+        self._8_BALL_RESPONSES_CMD = "8!responses "
+        self._8_BALL_BALL_CMD = "8!ball "
         
-        self._WEATHER_CMD = "?weather"
+        self._WEATHER_CMD = "?weather "
 
         self.trader_signals.start()
 
