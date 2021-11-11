@@ -2,7 +2,7 @@ import os
 import random
 import discord
 from discord.ext import tasks
-import aiofiles
+import redis
 
 import MACDTrader
 import WeatherBot
@@ -11,23 +11,18 @@ class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        self.products = []
-
-        with open("products.txt", "r") as input:
-            for line in input:
-                self.products.append(line.strip("\n"))
+        self.r = redis.from_url(os.environ.get("REDIS_URL"))
+        
+        self.products = self.r.lrange("products", 0, -1)
+        
+        for index in range(len(self.products)):
+            self.products[index] = self.products[index].decode("utf-8")
 
         self.trader = MACDTrader.MACDTrader(products=self.products)
         
         self.weather = WeatherBot.WeatherBot()
         
-        self.saved_locations = {}
-        
-        with open("saved_locations.txt", "r") as input:
-            for line in input:
-                if(line.strip() != ""):
-                    line_info = line.strip().split("=") 
-                    self.saved_locations[line_info[0]] = line_info[1]
+        self.saved_locations = self.r.hgetall("saved_locations")
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -42,11 +37,14 @@ class MyClient(discord.Client):
             "Outlook not so good", "Very doubtful", "No"
         ]
 
-        self.user_added = []
-
-        with open("responses.txt", "r") as input:
-            for line in input:
-                self.user_added.append(line.strip("\n"))
+        self.user_added = self.r.lrange("user_added", 0, -1)
+        
+        for index in range(len(self.user_added)):
+            self.user_added[index] = self.user_added[index].decode("utf-8")
+        
+        self._MACD_ADD_CMD = "$signal add "
+        self._MACD_REM_CMD_1 = "$signal rem "
+        self._MACD_REM_CMD_2 = "$signal remove "
 
         self._8_BALL_ADD_CMD = "8!add "
         self._8_BALL_REM_CMD = "8!rem "
@@ -84,9 +82,9 @@ class MyClient(discord.Client):
     async def on_message(self, message):
 
         # ****start MACDTrader commands for the bot****
-        if (message.content.startswith('$signal add')):
+        if (message.content.startswith(self._MACD_ADD_CMD)):
             try:
-                self.trader.add_product(message.content.split(" ")[2])
+                self.trader.add_product(message.content[len(self._MACD_ADD_CMD):], self.r)
                 await message.channel.send("Product added!")
             except IndexError:
                 await message.channel.send(
@@ -97,10 +95,10 @@ class MyClient(discord.Client):
             except Exception:
                 await message.channel.send("Product already added!")
 
-        elif (message.content.startswith('$signal remove')
-              or message.content.startswith("$signal rem")):
+        elif (message.content.startswith(self._MACD_REM_CMD_1)
+              or message.content.startswith(self._MACD_REM_CMD_2)):
             try:
-                self.trader.remove_product(message.content.split(" ")[2])
+                self.trader.remove_product(message.content.split(" ")[2], self.r)
                 await message.channel.send("Product removed!")
             except IndexError:
                 await message.channel.send(
@@ -148,25 +146,19 @@ class MyClient(discord.Client):
             else:
                 response = message.content[len(self._8_BALL_ADD_CMD):]
                 self.user_added.append(response)
+                self.r.lpush("user_added", response)
                 await message.channel.send("Response added!")
-
-                async with aiofiles.open('responses.txt', mode='w') as f:
-                        await f.write(response + "\n")
 
         elif (message.content.startswith(self._8_BALL_REM_CMD)):
             try:
                 response = message.content[len(self._8_BALL_REM_CMD):]
                 self.user_added.remove(response)
 
+                if(self.r.lrem("user_added", 0, response) == 0):
+                    raise(ValueError)
+                
                 await message.channel.send("Response removed!")
 
-                with open("products.txt", "r") as input:
-                    with open("temp.txt", "w") as output:
-                        # iterate all lines from file
-                        for line in input:
-                            # if text matches then don't write it
-                            if line.strip("\n") != response:
-                                output.write(line)
             except ValueError:
                 await message.channel.send(
                     "You are trying to remove a preset response or your response was never added"
@@ -199,9 +191,7 @@ class MyClient(discord.Client):
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
                     
-                    async with aiofiles.open('saved_locations.txt', mode='a') as f:
-                        await f.write(location[0] + "=" + location[1] + "\n")
-                        print("saved")
+                    self.r.hset("saved_locations", location[0], location[1])
                     
                     await message.channel.send("Location saved!")
             except IndexError:
@@ -212,16 +202,11 @@ class MyClient(discord.Client):
             try:
                 location = message.content[len(self._WEATHER_DELETE_CMD):]
                 self.saved_locations.pop(location)
+                
+                self.r.hdel("saved_locations", location)
 
                 await message.channel.send("Location deleted!")
 
-                with open("saved_locations.txt", "r") as input:
-                    with open("temp.txt", "w") as output:
-                        # iterate all lines from file
-                        for line in input:
-                            # if text matches then don't write it
-                            if not (location in line):
-                                output.write(line)
             except KeyError:
                 await message.channel.send(
                     "Location never saved :("
