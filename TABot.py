@@ -60,7 +60,7 @@ class MyClient(discord.Client):
         self.trader_signals.start()
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Activity(name='***Not yet implemented! !help for list of cmds'), type="watching")
+        await self.change_presence(activity=discord.Activity(name='***Not yet implemented! !help', type="watching"))
         print(f'We have logged in as {self.user} (ID: {self.user.id})')
 
     #****MACDTrader functions****
@@ -201,11 +201,7 @@ class MyClient(discord.Client):
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
                     
-                    f = open("saved_locations.txt", "a")
-
-                    f.write(location[0].strip() + "=" + location[1].strip() + "\n")
-
-                    f.close()
+                    self.weather.save_location(location)
                     
                     await message.channel.send("Location saved!")
             except IndexError:
