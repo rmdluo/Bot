@@ -67,6 +67,7 @@ class MyClient(discord.Client):
         self._WEATHER_SAVE_CMD = "?weather save "
         self._WEATHER_DELETE_CMD = "?weather delete "
         self._WEATHER_SAVED_CMD = "?weather check saved"
+        self._WEATHER_SHORTCUT_CMD = "?"
 
         self._HELP_CMD = "!help"
 
@@ -123,7 +124,11 @@ class MyClient(discord.Client):
                     "This product was not added before ;-;")
 
         elif (message.content.startswith('$signal products')):
-            await message.channel.send(self.trader.get_products_str())
+            products_str = self.trader.get_products_str()
+            if(products_str == ""):
+                await message.channel.send("No products have been added...")
+            else:
+                await message.channel.send(products_str)
 
         #****end MACDTrader Commands****
 
@@ -183,7 +188,8 @@ class MyClient(discord.Client):
 
             for response in (self.responses_affirmative +
                              self.responses_non_committal +
-                             self.responses_negative + self.user_added):
+                             self.responses_negative +
+                             self.user_added):
                 res_str = res_str + response + "\n"
                 
             if(res_str == ""):
@@ -249,6 +255,22 @@ class MyClient(discord.Client):
                     await message.channel.send("No location entered!")
                 else:
                     await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
+                    
+        elif(message.content.startswith(self._WEATHER_SHORTCUT_CMD)):
+            location = message.content[len(self._WEATHER_SHORTCUT_CMD):]
+            if(location in self.saved_locations.keys()):
+                location = self.saved_locations[location]
+
+                try:
+                    location = location.split(",")
+                    await message.channel.send("```" + self.weather.get_current_weather(location[0].strip(), location[1].strip()) + "```")
+                except IndexError:
+                    if(location == ""):
+                        await message.channel.send("No location entered!")
+                    else:
+                        await message.channel.send("```" + self.weather.get_current_weather(location) + "```")       
+            else:
+                await message.channel.send("```Not a saved location!```")
 
         #****end Weather commands****
 
