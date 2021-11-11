@@ -65,6 +65,8 @@ class MyClient(discord.Client):
         self._WEATHER_DELETE_CMD = "?weather delete "
         self._WEATHER_SAVED_CMD = "?weather check saved"
 
+        self._HELP_CMD = "!help"
+
         self.trader_signals.start()
 
     async def on_ready(self):
@@ -246,3 +248,6 @@ class MyClient(discord.Client):
                     await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
 
         #****end Weather commands****
+
+        elif(message.content==self._HELP_CMD):
+            await message.channel.send("help")
