@@ -29,7 +29,7 @@ class MyClient(discord.Client):
 
         if(self.r.exists("saved_locations")):
             self.saved_locations_bytes = self.r.hgetall("saved_locations")
-            for key in self.saved_locations:
+            for key in self.saved_locations_bytes.keys():
                 print(key)
                 self.saved_locations[key.decode("utf-8")] = self.saved_locations_bytes[key].decode("utf-8")
 
@@ -247,6 +247,8 @@ class MyClient(discord.Client):
                     await message.channel.send("No location entered!")
                 elif(location in self.saved_locations.keys()):
                     location = self.saved_locations[location]
+                    
+                    await message.channel.send(location)
                     
                     try:
                         location = message.content[len(self._WEATHER_CMD):].split(",")
