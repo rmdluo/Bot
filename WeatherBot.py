@@ -67,18 +67,25 @@ class WeatherBot():
         self.api_key = os.environ["weather_key"]
     
     #returns json data for city and state in US
-    def get_current_weather(self, city, state):
+    def get_current_weather(self, city, state=""):
         payload = {}
         try:
-            payload = {"q":city+","+"US-"+(self.us_state_to_abbrev[state].lower()), "appid":self.api_key, "units":"imperial"}
+            state = self.us_state_to_abbrev[state].lower()
         except KeyError:
-            payload = {"q":city+","+"US-"+state, "appid":self.api_key, "units":"imperial"}
-        return self.format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload).json())
+            pass
+        
+        if(state == ""):
+            payload = {"q":city, "appid":self.api_key, "units":"imperial"}
+        else:
+            payload = {"q":city+","+"US-" + state, "appid":self.api_key, "units":"imperial"}
+        
+        return self.format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload).json(), state)
     
-    def format_weather_json(self, weather_json):
-        weather_str = "---Weather in " + weather_json['name'] + "---\n" \
+    def format_weather_json(self, weather_json, state=""):
+        weather_str = "---Weather in " + weather_json['name'] + ", " + state + "---\n" \
             + "Temperature: " + str(weather_json['main']['temp']) + '\u00b0'+ " F\n" \
             + "Feels like: " + str(weather_json['main']['feels_like']) + '\u00b0'+ " F\n" \
+            + "Humidity: " + str(weather_json['main']['humidity']) + "%\n" \
             + "Weather conditions: " + weather_json['weather'][0]['description'] + "\n" \
             + "Wind: " + str(weather_json['wind']['speed']) + " MPH, " + str(weather_json['wind']['deg']) + '\u00b0'
         
