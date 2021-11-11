@@ -82,7 +82,7 @@ class WeatherBot():
         return self.format_weather_json(requests.get("https://api.openweathermap.org/data/2.5/weather", params = payload).json(), state)
     
     def format_weather_json(self, weather_json, state=""):
-        weather_str = "---Weather in " + weather_json['name'] + ", " + state + "---\n" \
+        weather_str = "---Weather in " + weather_json['name'] + (", " + state if state != "" else "") + "---\n" \
             + "Temperature: " + str(weather_json['main']['temp']) + '\u00b0'+ " F\n" \
             + "Feels like: " + str(weather_json['main']['feels_like']) + '\u00b0'+ " F\n" \
             + "Humidity: " + str(weather_json['main']['humidity']) + "%\n" \
