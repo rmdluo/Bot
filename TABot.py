@@ -6,6 +6,7 @@ import requests
 import json
 
 import MACDTrader
+import WeatherBot
 
 #parameters
 PRODUCTS = []
@@ -20,6 +21,8 @@ class MyClient(discord.Client):
                 PRODUCTS.append(line.strip("\n"))
 
         self.trader = MACDTrader.MACDTrader(products=PRODUCTS)
+        
+        self.weather = WeatherBot.WeatherBot()
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -177,4 +180,4 @@ class MyClient(discord.Client):
         #****start Weather commands****
         elif(message.content.startswith(self._WEATHER_CMD)):
             location = message.content[len(self._WEATHER_CMD):].split(", ")
-            await message.channel.send("```" + get_current_weather(location[0], location[1]) + "```")
+            await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
