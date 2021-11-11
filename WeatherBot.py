@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-class WeatherBot() {
+class WeatherBot():
     def __init__(self):
         self.us_state_to_abbrev = {
             "alabama": "AL",
@@ -82,4 +82,3 @@ class WeatherBot() {
         
         return str
         
-}
