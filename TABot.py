@@ -29,6 +29,8 @@ class MyClient(discord.Client):
 
         if(self.r.exists("saved_locations")):
             self.saved_locations = self.r.hgetall("saved_locations")
+            for key in self.saved_locations:
+                print(key)
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -226,7 +228,7 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._WEATHER_SAVED_CMD)):
             saved = ""
             for key in self.saved_locations:
-                saved = saved + key + " = " + self.saved_locations[key].decode("utf-8") + "\n"
+                saved = saved + key + " = " + self.saved_locations[key] + "\n"
             
             if(saved == ""):
                 await message.channel.send("No saved locations :eyes:")
