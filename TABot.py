@@ -237,24 +237,16 @@ class MyClient(discord.Client):
                 await message.channel.send(saved)
             
         elif(message.content.startswith(self._WEATHER_CMD)):
+            location = location = message.content[len(self._WEATHER_CMD):]
+            if(location in self.saved_locations.keys()):
+                location = self.saved_locations[location]
+
             try:
-                location = message.content[len(self._WEATHER_CMD):].split(",")
+                location = location.split(",")
                 await message.channel.send("```" + self.weather.get_current_weather(location[0].strip(), location[1].strip()) + "```")
             except IndexError:
-                location = message.content[len(self._WEATHER_CMD):].strip()
-                                
                 if(location == ""):
                     await message.channel.send("No location entered!")
-                elif(location in self.saved_locations.keys()):
-                    location = self.saved_locations[location]
-                    
-                    await message.channel.send(location)
-                    
-                    try:
-                        location = location.split(",")
-                        await message.channel.send("```" + self.weather.get_current_weather(location[0].strip(), location[1].strip()) + "```")
-                    except IndexError:
-                        await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
                 else:
                     await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
 
