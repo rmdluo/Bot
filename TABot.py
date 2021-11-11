@@ -174,14 +174,17 @@ class MyClient(discord.Client):
                 )
 
         elif (message.content.startswith(self._8_BALL_RESPONSES_CMD)):
-            str = ""
+            res_str = ""
 
             for response in (self.responses_affirmative +
                              self.responses_non_committal +
                              self.responses_negative + self.user_added):
-                str = str + response + "\n"
-
-            await message.channel.send(str)
+                res_str = res_str + response + "\n"
+                
+            if(res_str == ""):
+                await message.channel.send("No added responses...")
+            else:
+                await message.channel.send(res_str)
 
         #****end 8Ball Commands****
         
@@ -231,7 +234,10 @@ class MyClient(discord.Client):
             for key in self.saved_locations:
                 saved = saved + key + " = " + self.saved_locations[key] + "\n"
             
-            await message.channel.send(saved)
+            if(saved == "):
+                await message.channel.send("No saved locations :eyes:")
+            else:
+                await message.channel.send(saved)
             
         elif(message.content.startswith(self._WEATHER_CMD)):
             try:
