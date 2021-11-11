@@ -200,13 +200,14 @@ class MyClient(discord.Client):
                 else:
                     location = message.content[len(self._WEATHER_SAVE_CMD):].split("=")
                     self.saved_locations[location[0]] = location[1]
-                    await message.channel.send("Location saved!")
-
+                    
                     f = open("saved_locations.txt", "a")
 
                     f.write(location[0].strip() + "=" + location[1].strip() + "\n")
 
                     f.close()
+                    
+                    await message.channel.send("Location saved!")
             except IndexError:
                 await message.channel.send("Enter arguments as save_name=location")
             
