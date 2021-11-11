@@ -1,6 +1,7 @@
 import pandas_ta as ta
 import yfinance as yf
 import os
+import redis
 
 class MACDTrader:
     def __init__(self, products, fast=12, slow=26, signal=9,
@@ -63,7 +64,7 @@ class MACDTrader:
 
         return signals
 
-    def add_product(self, product):
+    def add_product(self, product, r):
         if(yf.download(tickers = product, period = self.period, interval = self.interval).empty):
             raise(ValueError)
         else:
@@ -73,27 +74,16 @@ class MACDTrader:
                 self.products.append(product)
                 self.product_trades[product] = "closed"
                 
-                f = open("products.txt", "a")
+                r.lpush("products", product.encode("utf-8"))
 
-                f.write(product + "\n")
-
-                f.close()
-
-    def remove_product(self, product):
+    def remove_product(self, product, r):
         try:
             self.products.remove(product)
             self.product_trades.pop(product)
 
-            with open("products.txt", "r") as input:
-                with open("temp.txt", "w") as output:
-                 # iterate all lines from file
-                    for line in input:
-                     # if text matches then don't write it
-                         if line.strip("\n") != product:
-                              output.write(line)
+            if(r.lrem("products", 0, product) == 0):
+                raise(ValueError)
 
-            # replace file with original name
-            os.replace('temp.txt', 'products.txt')
         except ValueError:
             raise(ValueError)
         except KeyError:
