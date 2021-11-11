@@ -82,7 +82,7 @@ class WeatherBot():
             + "Humidity: " + str(weather_json['main']['humidity']) + "%\n" \
             + "Weather conditions: " + weather_json['weather'][0]['description'] + "\n" \
             + "Wind: " + str(weather_json['wind']['speed']) + " MPH, " + str(weather_json['wind']['deg']) + '\u00b0' + "\n" \
-            + "Wind gusts: " + str(weather_json['wind']['gust']) + "MPH"
+            + "Wind gusts: " + str(weather_json['wind']['gust']) + " MPH"
         
         return weather_str
         
