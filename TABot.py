@@ -188,17 +188,6 @@ class MyClient(discord.Client):
         #****end 8Ball Commands****
         
         #****start Weather commands****
-        elif(message.content.startswith(self._WEATHER_CMD)):
-            try:
-                location = message.content[len(self._WEATHER_CMD):].split(", ")
-                await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
-            except IndexError:
-                location = message.content[len(self._WEATHER_CMD):]
-                
-                if(location == ""):
-                    await message.channel.send("No location entered!")
-                else:
-                    await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
             
         elif(message.content.startswith(self._WEATHER_SAVE_CMD)):
             try:
@@ -245,3 +234,17 @@ class MyClient(discord.Client):
                 saved = saved + key + " = " + self.saved_locations[key] + "\n"
             
             await message.channel.send(saved)
+            
+        elif(message.content.startswith(self._WEATHER_CMD)):
+            try:
+                location = message.content[len(self._WEATHER_CMD):].split(", ")
+                await message.channel.send("```" + self.weather.get_current_weather(location[0], location[1]) + "```")
+            except IndexError:
+                location = message.content[len(self._WEATHER_CMD):]
+                
+                if(location == ""):
+                    await message.channel.send("No location entered!")
+                else:
+                    await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
+
+        #****end Weather commands****
