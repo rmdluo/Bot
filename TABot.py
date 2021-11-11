@@ -28,9 +28,10 @@ class MyClient(discord.Client):
         self.saved_locations = {}
 
         if(self.r.exists("saved_locations")):
-            self.saved_locations = self.r.hgetall("saved_locations")
+            self.saved_locations_bytes = self.r.hgetall("saved_locations")
             for key in self.saved_locations:
                 print(key)
+                self.saved_locations[key.decode("utf-8")] = self.saved_locations_bytes[key].decode("utf-8")
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -241,14 +242,11 @@ class MyClient(discord.Client):
                 await message.channel.send("```" + self.weather.get_current_weather(location[0].strip(), location[1].strip()) + "```")
             except IndexError:
                 location = message.content[len(self._WEATHER_CMD):].strip()
-                
-                print(location)
-                
+                                
                 if(location == ""):
                     await message.channel.send("No location entered!")
                 elif(location in self.saved_locations.keys()):
-                    await message.channel.send(self.saved_locations[location])
-                    #await message.channel.send("```" + self.weather.get_current_weather(self.saved_locations[location]) + "```")
+                    await message.channel.send("```" + self.weather.get_current_weather(self.saved_locations[location]) + "```")
                 else:
                     await message.channel.send("```" + self.weather.get_current_weather(location) + "```")
 
