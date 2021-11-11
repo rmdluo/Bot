@@ -60,7 +60,7 @@ class MyClient(discord.Client):
 
         self._8_BALL_ADD_CMD = "8!add "
         self._8_BALL_REM_CMD = "8!rem "
-        self._8_BALL_RESPONSES_CMD = "8!responses "
+        self._8_BALL_RESPONSES_CMD = "8!responses"
         self._8_BALL_BALL_CMD = "8!ball"
         
         self._WEATHER_CMD = "?weather "
