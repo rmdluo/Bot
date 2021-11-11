@@ -95,7 +95,6 @@ class MyClient(discord.Client):
     #****end MACDTrader functions****
     
     #****help functions****
-    @self.command()
     async def embed(self, channel):
         embed=discord.Embed(title="Sample Embed", url="https://github.com/rmdluo/TABot/", description="This is an embed that will show how to build an embed and the different components", color=discord.Color.blurple())
         await channel.send(embed=embed)
