@@ -13,7 +13,10 @@ class MyClient(discord.Client):
         
         self.r = redis.from_url(os.environ.get("REDIS_URL"))
         
-        self.products = self.r.lrange("products", 0, -1)
+        self.products = []
+
+        if(self.r.exists("products"):
+            self.products = self.r.lrange("products", 0, -1)
         
         for index in range(len(self.products)):
             self.products[index] = self.products[index].decode("utf-8")
@@ -22,7 +25,10 @@ class MyClient(discord.Client):
         
         self.weather = WeatherBot.WeatherBot()
         
-        self.saved_locations = self.r.hgetall("saved_locations")
+        self.saved_locations = {}
+
+        if(self.r.exists("saved_locations")):
+            self.saved_locations = self.r.hgetall("saved_locations")
 
         self.responses_affirmative = [
             "It is certain", "It is decidedly so", "Without a doubt",
@@ -36,8 +42,11 @@ class MyClient(discord.Client):
             "Don't count on it", "My reply is no", "My sources say no",
             "Outlook not so good", "Very doubtful", "No"
         ]
+        
+        self.user_added = []
 
-        self.user_added = self.r.lrange("user_added", 0, -1)
+        if(self.r.exists("user_added)):
+            self.user_added = self.r.lrange("user_added", 0, -1)
         
         for index in range(len(self.user_added)):
             self.user_added[index] = self.user_added[index].decode("utf-8")
