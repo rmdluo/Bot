@@ -60,7 +60,7 @@ class MyClient(discord.Client):
         self.trader_signals.start()
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.CustomActivity('***Not yet implemented! !help for list of cmds'))
+        await self.user.change_presence(activity=discord.CustomActivity('***Not yet implemented! !help for list of cmds'))
         print(f'We have logged in as {self.user} (ID: {self.user.id})')
 
     #****MACDTrader functions****
