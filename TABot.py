@@ -226,7 +226,7 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._WEATHER_SAVED_CMD)):
             saved = ""
             for key in self.saved_locations:
-                saved = saved + key + " = " + self.saved_locations[key] + "\n"
+                saved = saved + key + " = " + self.saved_locations[key].decode("utf-8") + "\n"
             
             if(saved == ""):
                 await message.channel.send("No saved locations :eyes:")
