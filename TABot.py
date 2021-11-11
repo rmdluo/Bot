@@ -26,8 +26,8 @@ class MyClient(discord.Client):
         
         with open("saved_locations.txt", "r") as input:
             for line in input:
-                if(line != ""):
-                    line_info = line.strip().split(" ") 
+                if(line.strip() != ""):
+                    line_info = line.strip().split("=") 
                     self.saved_locations[line_info[0]] = line_info[1]
 
         self.responses_affirmative = [
