@@ -116,11 +116,7 @@ class MyClient(discord.Client):
         embed.add_field(name="?signal products",
                         value="Gets the list of products in the signal list.",
                         inline=True)
-        
-        
-        
-        embed.add_field(name="?signal")
-        
+                
         await channel.send(embed=embed)
 
     async def on_message(self, message):
