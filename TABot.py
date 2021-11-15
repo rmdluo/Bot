@@ -102,7 +102,7 @@ class MyClient(discord.Client):
                             color=discord.Color.blurple())
         
         embed.add_field(name="MACDTrader",
-                        value="Sends trading signals using MACD. Starts automatically upon start-up",
+                        value="Sends trading signals using MACD. Starts automatically upon start-up.",
                         inline=False)
         
         embed.add_field(name="?signal add <product>",
@@ -110,12 +110,52 @@ class MyClient(discord.Client):
                         inline=True)
         
         embed.add_field(name="?signal remove <product>",
-                        value="Removes inputted product from the signal list.\nEquivalent to ?signal rem <product>",
+                        value="Removes inputted product from the signal list. Equivalent to ?signal rem <product>",
                         inline=True)
         
         embed.add_field(name="?signal products",
-                        value="Gets the list of products in the signal list.",
+                        value="Shows the list of products in the signal list.",
+                        inline=False)
+        
+        embed.add_field(name="8Ball",
+                        value="Generates answers to questions.",
+                        inline=False)
+        
+        embed.add_field(name="8!ball <question>",
+                        value="Asks the 8Ball a question.",
+                        inline=False)
+        
+        embed.add_field(name="8!add <response>",
+                        value="Adds a response that the 8Ball can use.",
                         inline=True)
+        
+        embed.add_field(name="8!rem <response>",
+                        value="Removes a response from the user-added 8Ball responses."
+                        inline=True)
+        
+        embed.add_field(name="8!responses",
+                        value="Shows the possible 8Ball responses.",
+                        inline=False)
+        
+        embed.add_field(name="WeatherBot",
+                        value="Gets the weather!",
+                        inline=False)
+        
+        embed.add_field(name="?weather <location>",
+                        value="Gets the current weather in the inputted location.",
+                        inline=False)
+        
+        embed.add_field(name="?weather save <save_name>=<location>",
+                        value="Saves a location as save_name. Can be called with ?save_name afterwards."
+                        inline=True)
+        
+        embed.add_field(name="?weather delete <save_name>",
+                        value="Deletes a saved location.",
+                        inline=True)
+        
+        embed.add_field(name="?weather check saved",
+                        value="Displays a list of saved locations."
+                        inline=False)
                 
         await channel.send(embed=embed)
 
