@@ -105,15 +105,15 @@ class MyClient(discord.Client):
                         value="Sends trading signals using MACD. Starts automatically upon start-up.",
                         inline=False)
         
-        embed.add_field(name=" - ?signal add <product>",
+        embed.add_field(name=" - $signal add <product>",
                         value="Adds inputted product to the signal list.",
                         inline=False)
         
-        embed.add_field(name=" - ?signal remove <product>",
+        embed.add_field(name=" - $signal remove <product>",
                         value="Removes inputted product from the signal list. Equivalent to ?signal rem <product>",
                         inline=False)
         
-        embed.add_field(name=" - ?signal products",
+        embed.add_field(name=" - $signal products",
                         value="Shows the list of products in the signal list.",
                         inline=False)
         
