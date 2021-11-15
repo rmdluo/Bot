@@ -103,19 +103,19 @@ class MyClient(discord.Client):
         
         embed.add_field(name="MACDTrader",
                         value="Sends trading signals using MACD. Starts automatically upon start-up",
-                        inline=false)
+                        inline=False)
         
         embed.add_field(name="?signal add <product>",
                         value="Adds inputted product to the signal list.",
-                        inline = true)
+                        inline=True)
         
         embed.add_field(name="?signal remove <product>",
                         value="Removes inputted product from the signal list.\nEquivalent to ?signal rem <product>",
-                        inline = true)
+                        inline=True)
         
         embed.add_field(name="?signal products",
                         value="Gets the list of products in the signal list.",
-                        inline = true)
+                        inline=True)
         
         
         
