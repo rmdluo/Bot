@@ -146,7 +146,7 @@ class MyClient(discord.Client):
                         inline=False)
         
         embed.add_field(name="?weather save <save_name>=<location>",
-                        value="Saves a location as save_name. Can be called with ?save_name afterwards."
+                        value="Saves a location as save_name. Can be called with ?save_name afterwards.",
                         inline=True)
         
         embed.add_field(name="?weather delete <save_name>",
@@ -154,7 +154,7 @@ class MyClient(discord.Client):
                         inline=True)
         
         embed.add_field(name="?weather check saved",
-                        value="Displays a list of saved locations."
+                        value="Displays a list of saved locations.",
                         inline=False)
                 
         await channel.send(embed=embed)
