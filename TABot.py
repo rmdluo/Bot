@@ -130,7 +130,7 @@ class MyClient(discord.Client):
                         inline=True)
         
         embed.add_field(name="8!rem <response>",
-                        value="Removes a response from the user-added 8Ball responses."
+                        value="Removes a response from the user-added 8Ball responses.",
                         inline=True)
         
         embed.add_field(name="8!responses",
