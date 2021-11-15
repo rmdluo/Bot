@@ -101,59 +101,59 @@ class MyClient(discord.Client):
                             description="Multipurpose discord bot!",
                             color=discord.Color.blurple())
         
-        embed.add_field(name="MACDTrader",
+        embed.add_field(name="__**MACDTrader**__",
                         value="Sends trading signals using MACD. Starts automatically upon start-up.",
                         inline=False)
         
-        embed.add_field(name="?signal add <product>",
+        embed.add_field(name=" - ?signal add <product>",
                         value="Adds inputted product to the signal list.",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="?signal remove <product>",
+        embed.add_field(name=" - ?signal remove <product>",
                         value="Removes inputted product from the signal list. Equivalent to ?signal rem <product>",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="?signal products",
+        embed.add_field(name=" - ?signal products",
                         value="Shows the list of products in the signal list.",
                         inline=False)
         
-        embed.add_field(name="8Ball",
+        embed.add_field(name="__**8Ball**__",
                         value="Generates answers to questions.",
                         inline=False)
         
-        embed.add_field(name="8!ball <question>",
+        embed.add_field(name=" - 8!ball <question>",
                         value="Asks the 8Ball a question.",
                         inline=False)
         
-        embed.add_field(name="8!add <response>",
+        embed.add_field(name=" - 8!add <response>",
                         value="Adds a response that the 8Ball can use.",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="8!rem <response>",
+        embed.add_field(name=" - 8!rem <response>",
                         value="Removes a response from the user-added 8Ball responses.",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="8!responses",
+        embed.add_field(name=" - 8!responses",
                         value="Shows the possible 8Ball responses.",
                         inline=False)
         
-        embed.add_field(name="WeatherBot",
+        embed.add_field(name="__**WeatherBot**__",
                         value="Gets the weather!",
                         inline=False)
         
-        embed.add_field(name="?weather <location>",
+        embed.add_field(name=" - ?weather <location>",
                         value="Gets the current weather in the inputted location.",
                         inline=False)
         
-        embed.add_field(name="?weather save <save_name>=<location>",
+        embed.add_field(name=" - ?weather save <save_name>=<location>",
                         value="Saves a location as save_name. Can be called with ?save_name afterwards.",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="?weather delete <save_name>",
+        embed.add_field(name=" - ?weather delete <save_name>",
                         value="Deletes a saved location.",
-                        inline=True)
+                        inline=False)
         
-        embed.add_field(name="?weather check saved",
+        embed.add_field(name=" - ?weather check saved",
                         value="Displays a list of saved locations.",
                         inline=False)
                 
