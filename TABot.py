@@ -96,7 +96,31 @@ class MyClient(discord.Client):
     
     #****help functions****
     async def embed(self, channel):
-        embed=discord.Embed(title="Sample Embed", url="https://github.com/rmdluo/TABot/", description="This is an embed that will show how to build an embed and the different components", color=discord.Color.blurple())
+        embed=discord.Embed(title="TABot",
+                            url="https://github.com/rmdluo/TABot/",
+                            description="Multipurpose discord bot!",
+                            color=discord.Color.blurple())
+        
+        embed.add_field(name="MACDTrader",
+                        value="Sends trading signals using MACD. Starts automatically upon start-up",
+                        inline=false)
+        
+        embed.add_field(name="?signal add <product>",
+                        value="Adds inputted product to the signal list.",
+                        inline = true)
+        
+        embed.add_field(name="?signal remove <product>",
+                        value="Removes inputted product from the signal list.\nEquivalent to ?signal rem <product>",
+                        inline = true)
+        
+        embed.add_field(name="?signal products",
+                        value="Gets the list of products in the signal list.",
+                        inline = true)
+        
+        
+        
+        embed.add_field(name="?signal")
+        
         await channel.send(embed=embed)
 
     async def on_message(self, message):
