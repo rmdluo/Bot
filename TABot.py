@@ -3,9 +3,11 @@ import random
 import discord
 from discord.ext import tasks
 import redis
+from httplib2 import Http
 
 import MACDTrader
 import WeatherBot
+import TrackBot
 
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -30,7 +32,6 @@ class MyClient(discord.Client):
         if(self.r.exists("saved_locations")):
             self.saved_locations_bytes = self.r.hgetall("saved_locations")
             for key in self.saved_locations_bytes.keys():
-                print(key)
                 self.saved_locations[key.decode("utf-8")] = self.saved_locations_bytes[key].decode("utf-8")
 
         self.responses_affirmative = [
@@ -53,6 +54,15 @@ class MyClient(discord.Client):
         
         for index in range(len(self.user_added)):
             self.user_added[index] = self.user_added[index].decode("utf-8")
+            
+        self.tracking_users = {}
+        
+        if(self.r.exists("tracking_users")):
+            self.tracking_users_bytes = self.r.hgetall("saved_locations")
+            for key in self.tracking_users_bytes.keys():
+                self.tracking_users[key.decode("utf-8")] = self.tracking_users_bytes[key].decode("utf-8").split(", ")
+            
+        self.http_obj = Http()
         
         self._MACD_ADD_CMD = "$signal add "
         self._MACD_REM_CMD_1 = "$signal rem "
@@ -68,6 +78,9 @@ class MyClient(discord.Client):
         self._WEATHER_DELETE_CMD = "?weather delete "
         self._WEATHER_SAVED_CMD = "?weather check saved"
         self._WEATHER_SHORTCUT_CMD = "?"
+        
+        self._TRACK_START_CMD = "!track "
+        self._TRACK_STOP_CMD = "!track stop"
 
         self._HELP_CMD = "!help"
 
@@ -78,7 +91,7 @@ class MyClient(discord.Client):
         print(f'We have logged in as {self.user} (ID: {self.user.id})')
 
     #****MACDTrader functions****
-
+    """
     @tasks.loop(seconds=60)
     async def trader_signals(self):
         channel = self.get_channel(int(os.environ['channel_id']))
@@ -91,7 +104,7 @@ class MyClient(discord.Client):
     @trader_signals.before_loop
     async def before_signals(self):
         await self.wait_until_ready()
-
+    """
     #****end MACDTrader functions****
     
     #****help functions****
@@ -100,7 +113,7 @@ class MyClient(discord.Client):
                             url="https://github.com/rmdluo/TABot/",
                             description="Multipurpose discord bot!",
                             color=discord.Color.blurple())
-        
+        """
         embed.add_field(name="__**MACDTrader**__",
                         value="Sends trading signals using MACD. Starts automatically upon start-up.",
                         inline=False)
@@ -116,7 +129,7 @@ class MyClient(discord.Client):
         embed.add_field(name=" - $signal products",
                         value="Shows the list of products in the signal list.",
                         inline=False)
-        
+        """
         embed.add_field(name="__**8Ball**__",
                         value="Generates answers to questions.",
                         inline=False)
@@ -160,7 +173,7 @@ class MyClient(discord.Client):
         await channel.send(embed=embed)
 
     async def on_message(self, message):
-
+        """
         # ****start MACDTrader commands for the bot****
         if (message.content.startswith(self._MACD_ADD_CMD)):
             try:
@@ -194,12 +207,24 @@ class MyClient(discord.Client):
                 await message.channel.send("No products have been added...")
             else:
                 await message.channel.send(products_str)
-
+        """
         #****end MACDTrader Commands****
+        
+        #****notification****
+        for user in self.tracking_users.keys():
+            if(message.channel.name in self.tracking_users[user]):
+                message_headers = {'Content-Type': 'application/json; charset=UTF-8'}
+
+                self.http_obj.request(
+                    uri = self.tracking_users[user][0],
+                    method="POST",
+                    headers=message_headers,
+                    body=dumps("Message from " + message.author.display_name + " in " + message.channel)
+                )
 
         #****start 8Ball Commands****
 
-        elif (message.content.startswith(self._8_BALL_BALL_CMD)):
+        if (message.content.startswith(self._8_BALL_BALL_CMD)):
             num = 0
 
             if (len(self.user_added) > 0):
@@ -338,6 +363,23 @@ class MyClient(discord.Client):
                 await message.channel.send("```Not a saved location!```")
 
         #****end Weather commands****
+        
+        #****start TrackBot commands****
+        elif(message.content.startswith(self._TRACK_START_CMD)):
+            if(message.author.display_name in self.tracking_users.keys()):
+                self.tracking_users[message.author.display_name].append(message.channel.name)
+                self.r.hset("tracking_users", message.author.display_name, self.r.hget("tracking_users", message.author.display_name) + message.channel.name)
+            else:
+                webhook_url = message.content[len(SELF._TRACK_START_CMD):]
+                self.tracking_users[message.author.display_name] = webhook_url + message.channel.name
+                self.r.hset("tracking_users", message.author.display_name, webhook_url + message.channel.name)
+        
+        elif(message.content.startswith(self._TRACK_STOP_CMD)):
+            self.r.hdel(message.author.display_name)
+            if(message.author.display_name in self.tracking_users.keys()):
+                del self.tracking_users[message.author.display_name]
+            
+        #****end TrackBot commands****
 
         elif(message.content==self._HELP_CMD):
             await self.embed(message.channel)
