@@ -8,3 +8,4 @@ yfinance==0.1.64
 requests==2.26.0
 aiofiles==0.7.0
 redis==3.5.3
+httplib2==0.20.4
