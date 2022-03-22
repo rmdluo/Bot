@@ -84,7 +84,7 @@ class MyClient(discord.Client):
 
         self._HELP_CMD = "!help"
 
-        self.trader_signals.start()
+        #self.trader_signals.start()
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(name='!help', type=discord.ActivityType.listening))
