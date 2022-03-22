@@ -2,7 +2,7 @@ from json import dumps
 from httplib2 import Http #httplib2-0.20.4
 from discord import Message
 
-class track-bot:
+class TrackBot:
   def __init__(self, webhook_url):
     self.webhook_url = webhook_url
     self.channels = []
