@@ -296,7 +296,7 @@ class MyClient(discord.Client):
             elif(message.content.startswith("-")):
                 self.users_creating_list[message.author.name].append(message.content)
 
-        elif(message.author.name in self.users_users_finishing_list):
+        elif(message.author.name in self.users_finishing_list):
             if(message.content.startswith("--")):
                 l = ListBot.List(
                                     message.content[2:],
