@@ -37,11 +37,13 @@ class List:
                 str += "\t- " + self.items[i] + "\n"
 
     def to_string(self):
-        str = ""
-        str += self.name + ", " + self.author + ", "+ str(self.ordered)
+        info_str = ""
+        info_str += self.name + ", " + self.author + ", "+ str(self.ordered)
         
         for i in range(len(self.items)):
-            str += ", " + self.items[i]
+            info_str += ", " + self.items[i]
+
+        return info_str
 
 def from_string(str):
     info = str.split(", ")
