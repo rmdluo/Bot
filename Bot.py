@@ -324,10 +324,15 @@ class MyClient(discord.Client):
             try:
                 await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):])].to_output())
             except IndexError:
-                await message.channel.send("not a list")
+                await message.channel.send("not a list -- check *-list show*")
 
         #TODO: delete lists
-
+        elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+            try:
+                self.lists.pop(int(message.content[len(self._LIST_SELECT_CMD):]))
+            except IndexError:
+                await message.channel.send("not a list -- check *-list show*")
+                
         #TODO: alter lists
 
         #****end List commands****
