@@ -83,6 +83,7 @@ class MyClient(discord.Client):
         self._LIST_CREATE_CMD = "-list create"
         self._LIST_SHOW_CMD = "-list show"
         self._LIST_SELECT_CMD = "-list select "
+        self._LIST_DELETE_CMD = "-list delete "
         self._LIST_ADD_CMD = "-list add "
         self._LIST_REMOVE_CMD = "-list remove "
 
@@ -329,10 +330,12 @@ class MyClient(discord.Client):
         #TODO: delete lists
         elif(message.content.startswith(self._LIST_REMOVE_CMD)):
             try:
-                self.lists.pop(int(message.content[len(self._LIST_SELECT_CMD):]))
+                l = self.lists.pop(int(message.content[len(self._LIST_DELETE_CMD):]))
+                await message.channel.send("List deleted:")
+                await message.channel.send(l.to_output())
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
-                
+
         #TODO: alter lists
 
         #****end List commands****
