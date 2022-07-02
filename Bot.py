@@ -290,11 +290,11 @@ class MyClient(discord.Client):
             self.users_creating_list[message.author.name] = []
         
         elif(message.author.name in self.users_creating_list.keys()):
-            if(message.content.startswith("-")):
-                self.users_creating_list[message.author.name].append(message.content)
-            elif(message.content.startswith("--stop")):
+            if(message.content.startswith("--stop")):
                 await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
                 self.users_finishing_list.append(message.author.name)
+            elif(message.content.startswith("-")):
+                self.users_creating_list[message.author.name].append(message.content)
 
         elif(message.author.name in self.users_users_finishing_list):
             if(message.content.startswith("--")):
