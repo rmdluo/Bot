@@ -27,14 +27,16 @@ class List:
         return self.items.pop(item_index)
 
     def to_output(self):
-        str = ""
-        str += self.name + " by " + self.author + ":\n"
+        info_str = ""
+        info_str += self.name + " by " + self.author + ":\n"
         
         for i in range(len(self.items)):
             if(self.ordered):
-                str += "\t" + str(i + 1) + ". " + self.items[i] + "\n"
+                info_str += "\t" + str(i + 1) + ". " + self.items[i] + "\n"
             else:
-                str += "\t- " + self.items[i] + "\n"
+                info_str += "\t- " + self.items[i] + "\n"
+
+        return info_str
 
     def to_string(self):
         info_str = ""
