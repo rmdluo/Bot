@@ -328,7 +328,7 @@ class MyClient(discord.Client):
                 await message.channel.send("not a list -- check *-list show*")
 
         #TODO: delete lists
-        elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+        elif(message.content.startswith(self._LIST_DELETE_CMD)):
             try:
                 l = self.lists.pop(int(message.content[len(self._LIST_DELETE_CMD):]))
                 await message.channel.send("List deleted:")
