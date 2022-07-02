@@ -312,7 +312,10 @@ class MyClient(discord.Client):
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SELECT_CMD)):
-            await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):])].to_output())
+            try:
+                await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):])].to_output())
+            except IndexError:
+                await message.channel.send("not a list")
 
         #TODO: delete lists
 
