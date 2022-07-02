@@ -312,7 +312,7 @@ class MyClient(discord.Client):
                 self.users_creating_list[message.author.name].append(message.content[1:])
 
         #TODO: display lists
-        elif(message.content.startwith(self._LIST_SHOW_CMD)):
+        elif(message.content.startswith(self._LIST_SHOW_CMD)):
             info_str = ""; i = 1
             for list in self.lists:
                 info_str += str(i) + ". " + list.get_display_string()
