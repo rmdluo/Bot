@@ -4,10 +4,12 @@ import discord
 from discord.ext import tasks
 import redis
 from httplib2 import Http
+import threading
 
 import MACDTrader
 import WeatherBot
 import TrackBot
+import ListBot
 
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -50,20 +52,19 @@ class MyClient(discord.Client):
         self.user_added = []
 
         if(self.r.exists("user_added")):
-            self.user_added = self.r.lrange("user_added", 0, -1)
+            self.user_added = [item.decode("utf-8") for item in self.r.lrange("user_added", 0, -1)]
         
-        for index in range(len(self.user_added)):
-            self.user_added[index] = self.user_added[index].decode("utf-8")
-            
-        self.tracking_users = {}
+        # for index in range(len(self.user_added)):
+        #     self.user_added[index] = self.user_added[index].decode("utf-8")
+
+        self.lists = []
+
+        if(self.r.exists("discord_lists")):
+            self.lists = [ListBot.from_string(item) for item in self.r.lrange("discord_lists", 0, -1)]
         
-        if(self.r.exists("tracking_users")):
-            self.tracking_users_bytes = self.r.hgetall("saved_locations")
-            for key in self.tracking_users_bytes.keys():
-                self.tracking_users[key.decode("utf-8")] = self.tracking_users_bytes[key].decode("utf-8").split(", ")
-            
-        self.http_obj = Http()
-        
+        self.users_creating_list = {}
+        self.users_finishing_list = []
+
         self._MACD_ADD_CMD = "$signal add "
         self._MACD_REM_CMD_1 = "$signal rem "
         self._MACD_REM_CMD_2 = "$signal remove "
@@ -78,58 +79,25 @@ class MyClient(discord.Client):
         self._WEATHER_DELETE_CMD = "?weather delete "
         self._WEATHER_SAVED_CMD = "?weather check saved"
         self._WEATHER_SHORTCUT_CMD = "?"
-        
-        self._TRACK_START_CMD = "!track "
-        self._TRACK_STOP_CMD = "!track stop"
+
+        self._LIST_CREATE_CMD = "-list create"
+        self._LIST_SELECT_CMD = "-list select "
+        self._LIST_ADD_CMD = "-list add "
+        self._LIST_REMOVE_CMD = "-list remove "
 
         self._HELP_CMD = "!help"
-
-        #self.trader_signals.start()
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(name='!help', type=discord.ActivityType.listening))
         print(f'We have logged in as {self.user} (ID: {self.user.id})')
-
-    #****MACDTrader functions****
-    """
-    @tasks.loop(seconds=60)
-    async def trader_signals(self):
-        channel = self.get_channel(int(os.environ['channel_id']))
-
-        signals = self.trader.get_signals()
-
-        for signal in signals:
-            await channel.send(signal)
-
-    @trader_signals.before_loop
-    async def before_signals(self):
-        await self.wait_until_ready()
-    """
-    #****end MACDTrader functions****
     
     #****help functions****
     async def embed(self, channel):
-        embed=discord.Embed(title="TABot",
-                            url="https://github.com/rmdluo/TABot/",
+        embed=discord.Embed(title="Bot",
+                            url="https://github.com/rmdluo/bot/",
                             description="Multipurpose discord bot!",
                             color=discord.Color.blurple())
-        """
-        embed.add_field(name="__**MACDTrader**__",
-                        value="Sends trading signals using MACD. Starts automatically upon start-up.",
-                        inline=False)
-        
-        embed.add_field(name=" - $signal add <product>",
-                        value="Adds inputted product to the signal list.",
-                        inline=False)
-        
-        embed.add_field(name=" - $signal remove <product>",
-                        value="Removes inputted product from the signal list. Equivalent to ?signal rem <product>",
-                        inline=False)
-        
-        embed.add_field(name=" - $signal products",
-                        value="Shows the list of products in the signal list.",
-                        inline=False)
-        """
+
         embed.add_field(name="__**8Ball**__",
                         value="Generates answers to questions.",
                         inline=False)
@@ -173,55 +141,6 @@ class MyClient(discord.Client):
         await channel.send(embed=embed)
 
     async def on_message(self, message):
-        """
-        # ****start MACDTrader commands for the bot****
-        if (message.content.startswith(self._MACD_ADD_CMD)):
-            try:
-                self.trader.add_product(message.content[len(self._MACD_ADD_CMD):], self.r)
-                await message.channel.send("Product added!")
-            except IndexError:
-                await message.channel.send(
-                    "Please add the product symbol and ensure that it is separated from the command using a space."
-                )
-            except ValueError:
-                await message.channel.send("Invalid product")
-            except Exception:
-                await message.channel.send("Product already added!")
-
-        elif (message.content.startswith(self._MACD_REM_CMD_1)
-              or message.content.startswith(self._MACD_REM_CMD_2)):
-            try:
-                self.trader.remove_product(message.content.split(" ")[2], self.r)
-                await message.channel.send("Product removed!")
-            except IndexError:
-                await message.channel.send(
-                    "Please add the product symbol and ensure that it is separated from the command using a space."
-                )
-            except ValueError:
-                await message.channel.send(
-                    "This product was not added before ;-;")
-
-        elif (message.content.startswith('$signal products')):
-            products_str = self.trader.get_products_str()
-            if(products_str == ""):
-                await message.channel.send("No products have been added...")
-            else:
-                await message.channel.send(products_str)
-        """
-        #****end MACDTrader Commands****
-        
-        #****notification****
-        for user in self.tracking_users.keys():
-            if(message.channel.name in self.tracking_users[user]):
-                message_headers = {'Content-Type': 'application/json; charset=UTF-8'}
-
-                self.http_obj.request(
-                    uri = self.tracking_users[user][0],
-                    method="POST",
-                    headers=message_headers,
-                    body=dumps("Message from " + message.author.display_name + " in " + message.channel)
-                )
-
         #****start 8Ball Commands****
 
         if (message.content.startswith(self._8_BALL_BALL_CMD)):
@@ -363,24 +282,43 @@ class MyClient(discord.Client):
                 await message.channel.send("```Not a saved location!```")
 
         #****end Weather commands****
-        
-        #****start TrackBot commands****
-        elif(message.content.startswith(self._TRACK_START_CMD)):
-            if(message.author.display_name in self.tracking_users.keys()):
-                self.tracking_users[message.author.display_name].append(message.channel.name)
-                self.r.hset("tracking_users", message.author.display_name, self.r.hget("tracking_users", message.author.display_name) + message.channel.name)
-            else:
-                webhook_url = message.content[len(SELF._TRACK_START_CMD):]
-                self.tracking_users[message.author.display_name] = webhook_url + message.channel.name
-                self.r.hset("tracking_users", message.author.display_name, webhook_url + message.channel.name)
-        
-        elif(message.content.startswith(self._TRACK_STOP_CMD)):
-            self.r.hdel(message.author.display_name)
-            if(message.author.display_name in self.tracking_users.keys()):
-                del self.tracking_users[message.author.display_name]
-            
-        #****end TrackBot commands****
 
-        elif(message.content==self._HELP_CMD):
+        #****start List commands
+        
+        elif(message.content.startswith(self._LIST_CREATE_CMD)):
+            await message.channel.send("Enter the items for your list using the following format: \"-{item}\". When you're done, please send \"--stop\".")
+            self.users_creating_list[message.author.name] = []
+        
+        elif(message.author.name in self.users_creating_list.keys()):
+            if(message.content.startswith("-")):
+                self.users_creating_list[message.author.name].append(message.content)
+            elif(message.content.startswith("--stop")):
+                await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
+                self.users_finishing_list.append(message.author.name)
+
+        elif(message.author.name in self.users_users_finishing_list):
+            if(message.content.startswith("--")):
+                l = ListBot.List(
+                                    message.content[2:],
+                                    message.author.name,
+                                    items=self.users_creating_list[message.author.name]
+                                )
+                self.lists.append(l)
+                self.r.lpush("discord_lists", l.to_string())
+                await message.channel.send(l.to_output())
+
+                self.users_finishing_list.remove(message.author.name)
+                del self.users_creating_list[message.author.name]
+
+        #TODO: display lists
+        elif(message.content.startswith(self._LIST_SELECT_CMD)):
+            await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):])].to_output())
+
+        #TODO: delete lists
+
+        #TODO: alter lists
+
+        #****end List commands****
+        
+        if(message.content==self._HELP_CMD):
             await self.embed(message.channel)
-            

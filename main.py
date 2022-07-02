@@ -1,8 +1,8 @@
 import keep_alive
 import os
-import TABot
+import Bot
 
-client = TABot.MyClient()
+client = Bot.MyClient()
 
 #keeps the bot running on the server
 keep_alive.keep_alive()
