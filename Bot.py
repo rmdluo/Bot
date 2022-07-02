@@ -60,7 +60,7 @@ class MyClient(discord.Client):
         self.lists = []
 
         if(self.r.exists("discord_lists")):
-            self.lists = [ListBot.from_string(item) for item in self.r.lrange("discord_lists", 0, -1)]
+            self.lists = [ListBot.from_string(item.decode("utf-8")) for item in self.r.lrange("discord_lists", 0, -1)]
         
         self.users_creating_list = {}
         self.users_finishing_list = []
