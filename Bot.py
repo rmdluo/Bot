@@ -311,6 +311,7 @@ class MyClient(discord.Client):
                 self.users_finishing_list.append(message.author.name)
             elif(message.content.startswith("-")):
                 self.users_creating_list[message.author.name].append(message.content[1:])
+                await message.add_reaction("white_check_mark")
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
@@ -323,14 +324,14 @@ class MyClient(discord.Client):
 
         elif(message.content.startswith(self._LIST_SELECT_CMD)):
             try:
-                await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):])].to_output())
+                await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):]) - 1].to_output())
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
         #TODO: delete lists
         elif(message.content.startswith(self._LIST_DELETE_CMD)):
             try:
-                l = self.lists.pop(int(message.content[len(self._LIST_DELETE_CMD):]))
+                l = self.lists.pop(int(message.content[len(self._LIST_DELETE_CMD):]) - 1)
                 await message.channel.send("List deleted:")
                 await message.channel.send(l.to_output())
             except IndexError:
