@@ -311,7 +311,7 @@ class MyClient(discord.Client):
                 self.users_finishing_list.append(message.author.name)
             elif(message.content.startswith("-")):
                 self.users_creating_list[message.author.name].append(message.content[1:])
-                await message.add_reaction("white_check_mark")
+                await message.add_reaction("\U00002705")
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
