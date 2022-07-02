@@ -315,7 +315,7 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
             info_str = ""; i = 1
             for list in self.lists:
-                info_str += str(i) + ". " + list.get_display_string()
+                info_str += str(i) + ". " + list.get_display_string() + "\n"
                 i += 1
 
             await message.channel.send(info_str)
