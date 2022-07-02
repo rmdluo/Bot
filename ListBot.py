@@ -47,6 +47,9 @@ class List:
 
         return info_str
 
+    def get_display_string(self):
+        return self.name + " by " + self.author
+        
 def from_string(str):
     info = str.split(", ")
 
