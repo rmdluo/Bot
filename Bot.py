@@ -345,7 +345,6 @@ class MyClient(discord.Client):
 
         #TODO: add to lists
         elif(message.author.name in self.users_selected.keys()):
-            await message.add_reaction("\U00002705")
             if(message.content.startswith(self._LIST_ADD_CMD)):
                 self.lists[self.users_selected[message.author.name]].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
