@@ -14,7 +14,7 @@ class List:
     def change_name(self, name):
         self.name = name
 
-    def change_item(self, item, item_index):
+    def change_item(self, item_index, item):
         self.items[item_index] = item
 
     def turn_ordered(self):
@@ -24,7 +24,7 @@ class List:
         self.ordered = False
 
     def remove_item(self, item_index):
-        return self.items.pop(item_index)
+        return self.items.pop(item_index)   
 
     def get_item(self, item_index):
         return self.items[item_index]
