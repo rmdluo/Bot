@@ -64,6 +64,8 @@ class MyClient(discord.Client):
         
         self.users_creating_list = {}
         self.users_finishing_list = []
+        self.users_selected = {}
+        self.users_adding_list = {}
 
         self._MACD_ADD_CMD = "$signal add "
         self._MACD_REM_CMD_1 = "$signal rem "
@@ -81,8 +83,8 @@ class MyClient(discord.Client):
         self._WEATHER_SHORTCUT_CMD = "?"
 
         self._LIST_CREATE_CMD = "-list create"
-        self._LIST_SHOW_CMD = "-list show"
-        self._LIST_SELECT_CMD = "-list select "
+        self._LIST_SHOW_CMD = "-list show all"
+        self._LIST_SELECT_CMD = "-list show "
         self._LIST_DELETE_CMD = "-list delete "
         self._LIST_ADD_CMD = "-list add "
         self._LIST_REMOVE_CMD = "-list remove "
@@ -338,6 +340,16 @@ class MyClient(discord.Client):
                 await message.channel.send("not a list -- check *-list show*")
 
         #TODO: alter lists
+        #TODO: add to lists
+        elif(message.content.startswith(self._LIST_ADD_CMD)):
+            await message.channel.send("Enter the items you want to add using the following format: \"-{item}\". When you're done, please send \"--stop\".")
+            self.users_adding_list[message.author.name] = self.lists[int(message.content[self._LIST_ADD_CMD])]
+
+        elif(message.author.name in self.users_adding_list):
+            if(message.content.startswith("--stop")):
+                del self.users_adding_list[message.author.name]
+            elif(message.content.startswith("-")):
+                self.users_adding_list[message.author.name].add_item(message.content[1:])
 
         #****end List commands****
         
