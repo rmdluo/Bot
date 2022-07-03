@@ -327,27 +327,57 @@ class MyClient(discord.Client):
             await message.channel.send("Enter the items for your list using the following format: \"-{item}\". When you're done, please send \"--stop\".")
             self.users_creating_list[message.author.display_name] = []
 
-        elif(message.author.display_name in self.users_finishing_list):
-            if(message.content.startswith("--")):
-                l = ListBot.List(
+            def check_author(m):
+                return m.author.display_name == message.author.display_name
+
+            item = await self.wait_for("message", check=check_author)
+
+            while(item.content != "--stop"):
+                if(item.content.startswith("-")):
+                    self.users_creating_list[message.author.display_name].append(item.content[1:])
+                    await item.add_reaction("\U00002705")
+                    item = await self.wait_for("message", check=check_author)
+
+            def check_name(m):
+                return m.content.startswith("--") and m.author.display_name == message.author.display_name
+            
+            name = message.content[len(self._LIST_CREATE_CMD):].strip()
+
+            if(name == ""):
+                await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
+                name = await self.wait_for("message", check=check_name)
+            
+            l = ListBot.List(
                                     message.content[2:],
                                     message.author.display_name,
                                     items=self.users_creating_list[message.author.display_name]
                                 )
-                self.lists.append(l)
-                self.r.lpush("discord_lists", l.to_string())
-                await message.channel.send(l.to_output())
+            self.lists.append(l)
+            self.r.lpush("discord_lists", l.to_string())
+            await message.channel.send(l.to_output())    
 
-                self.users_finishing_list.remove(message.author.display_name)
-                del self.users_creating_list[message.author.display_name]
+
+        # elif(message.author.display_name in self.users_finishing_list):
+        #     if(message.content.startswith("--")):
+        #         l = ListBot.List(
+        #                             message.content[2:],
+        #                             message.author.display_name,
+        #                             items=self.users_creating_list[message.author.display_name]
+        #                         )
+        #         self.lists.append(l)
+        #         self.r.lpush("discord_lists", l.to_string())
+        #         await message.channel.send(l.to_output())
+
+        #         self.users_finishing_list.remove(message.author.display_name)
+        #         del self.users_creating_list[message.author.display_name]
         
-        elif(message.author.display_name in self.users_creating_list.keys()):
-            if(message.content.startswith("--stop")):
-                await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
-                self.users_finishing_list.append(message.author.display_name)
-            elif(message.content.startswith("-")):
-                self.users_creating_list[message.author.display_name].append(message.content[1:])
-                await message.add_reaction("\U00002705")
+        # elif(message.author.display_name in self.users_creating_list.keys()):
+        #     if(message.content.startswith("--stop")):
+        #         await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
+        #         self.users_finishing_list.append(message.author.display_name)
+        #     elif(message.content.startswith("-")):
+        #         self.users_creating_list[message.author.display_name].append(message.content[1:])
+        #         await message.add_reaction("\U00002705")
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
