@@ -318,7 +318,7 @@ class MyClient(discord.Client):
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
-            arg = message.content[len(self._LIST_SHOW_CMD)].lower()
+            arg = message.content[len(self._LIST_SHOW_CMD):].lower()
             if(arg == "" or arg == "all"):
                 info_str = ""; i = 1
                 for list in self.lists:
