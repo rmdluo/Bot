@@ -165,10 +165,10 @@ class MyClient(discord.Client):
 
         embed.add_field(name=" - -list select <list num>",
                         value="""
-                                Selects the list num-th list\n
-                                ++<item> - adds item to selected list\n
-                                --<item number> - removes the item from the selected list\n
-                                +-<item number> <item> - changes the item number to the new item
+                                Selects the list num-th list
+                                **++<item>** - adds item to selected list
+                                **--<item number>** - removes the item from the selected list
+                                **+-<item number> <item>** - changes the item number to the new item
                               """,
                         inline=False)
 
