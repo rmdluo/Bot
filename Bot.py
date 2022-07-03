@@ -360,8 +360,10 @@ class MyClient(discord.Client):
                 await message.add_reaction("\U00002705")
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
             elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-                await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
+
+                await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
                 reply_message = await message.channel.wait_for('message')
+                
                 while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
                     reply_message = await message.channel.wait_for('message')
 
