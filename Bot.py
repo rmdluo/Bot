@@ -83,8 +83,8 @@ class MyClient(discord.Client):
         self._WEATHER_SHORTCUT_CMD = "?"
 
         self._LIST_CREATE_CMD = "-list create"
-        self._LIST_SHOW_CMD = "-list show all"
-        self._LIST_SELECT_CMD = "-list show "
+        self._LIST_SHOW_CMD = "-list show"
+        self._LIST_SELECT_CMD = "-list select "
         self._LIST_DELETE_CMD = "-list delete "
         self._LIST_ADD_CMD = "-list add "
         self._LIST_REMOVE_CMD = "-list remove "
@@ -351,6 +351,7 @@ class MyClient(discord.Client):
                 del self.users_adding_list[message.author.name]
             elif(message.content.startswith("-")):
                 self.users_adding_list[message.author.name].add_item(message.content[1:])
+                await message.add_reaction("\U00002705")
 
         #****end List commands****
         
