@@ -64,8 +64,8 @@ class MyClient(discord.Client):
         if(self.r.exists("discord_lists")):
             self.lists = [ListBot.from_string(item.decode("utf-8")) for item in self.r.lrange("discord_lists", 0, -1)]
         
-        self.users_creating_list = {}
-        self.users_finishing_list = []
+        # self.users_creating_list = {}
+        # self.users_finishing_list = []
         self.users_selected = {}
 
         self._MACD_ADD_CMD = "$signal add "
@@ -294,29 +294,54 @@ class MyClient(discord.Client):
         
         elif(message.content.startswith(self._LIST_CREATE_CMD)):
             await message.channel.send("Enter the items for your list using the following format: \"-{item}\". When you're done, please send \"--stop\".")
-            self.users_creating_list[message.author.name] = []
+            # self.users_creating_list[message.author.name] = []
+            list_items = []
 
-        elif(message.author.name in self.users_finishing_list):
-            if(message.content.startswith("--")):
-                l = ListBot.List(
+            item = await self.wait_for("message")
+
+            while(item != "--stop"):
+                if(item.author.name == message.author.name and item.startswith("-")):
+                    list_items.append(item.content[1:])
+                    await item.add_reaction("\U00002705")
+                item = await self.wait_for("message")
+
+            await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
+
+            def check(m):
+                return m.author.name == message.author.name and m.content.startswith("--")
+
+            list_name = await self.wait_for("message", check=check)
+
+            l = ListBot.List(
                                     message.content[2:],
                                     message.author.name,
                                     items=self.users_creating_list[message.author.name]
                                 )
-                self.lists.append(l)
-                self.r.lpush("discord_lists", l.to_string())
-                await message.channel.send(l.to_output())
+            self.lists.append(l)
+            self.r.lpush("discord_lists", l.to_string())
+            await message.channel.send(l.to_output())
 
-                self.users_finishing_list.remove(message.author.name)
-                del self.users_creating_list[message.author.name]
+        # elif(message.author.name in self.users_finishing_list):
+        #     if(message.content.startswith("--")):
+        #         l = ListBot.List(
+        #                             message.content[2:],
+        #                             message.author.name,
+        #                             items=self.users_creating_list[message.author.name]
+        #                         )
+        #         self.lists.append(l)
+        #         self.r.lpush("discord_lists", l.to_string())
+        #         await message.channel.send(l.to_output())
+
+        #         self.users_finishing_list.remove(message.author.name)
+        #         del self.users_creating_list[message.author.name]
         
-        elif(message.author.name in self.users_creating_list.keys()):
-            if(message.content.startswith("--stop")):
-                await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
-                self.users_finishing_list.append(message.author.name)
-            elif(message.content.startswith("-")):
-                self.users_creating_list[message.author.name].append(message.content[1:])
-                await message.add_reaction("\U00002705")
+        # elif(message.author.name in self.users_creating_list.keys()):
+        #     if(message.content.startswith("--stop")):
+        #         await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
+        #         self.users_finishing_list.append(message.author.name)
+        #     elif(message.content.startswith("-")):
+        #         self.users_creating_list[message.author.name].append(message.content[1:])
+        #         await message.add_reaction("\U00002705")
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
