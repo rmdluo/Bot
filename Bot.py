@@ -66,7 +66,6 @@ class MyClient(discord.Client):
         self.users_creating_list = {}
         self.users_finishing_list = []
         self.users_selected = {}
-        self.users_adding_list = {}
 
         self._MACD_ADD_CMD = "$signal add "
         self._MACD_REM_CMD_1 = "$signal rem "
@@ -326,13 +325,6 @@ class MyClient(discord.Client):
 
             await message.channel.send(info_str)
 
-        elif(message.content.startswith(self._LIST_SELECT_CMD)):
-            try:
-                await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):]) - 1].to_output())
-                self.users_selected[message.author.name] = self.lists[int(message.content[len(self._LIST_SELECT_CMD):]) - 1]
-            except IndexError:
-                await message.channel.send("not a list -- check *-list show*")
-
         #TODO: delete lists
         elif(message.content.startswith(self._LIST_DELETE_CMD)):
             try:
@@ -343,25 +335,30 @@ class MyClient(discord.Client):
                 await message.channel.send("not a list -- check *-list show*")
 
         #TODO: alter lists
+        elif(message.content.startswith(self._LIST_SELECT_CMD)):
+            try:
+                list_index = int(message.content[len(self._LIST_SELECT_CMD):]) - 1
+                await message.channel.send(self.lists[list_index].to_output())
+                self.users_selected[message.author.name] = self.lists[list_index]
+            except IndexError:
+                await message.channel.send("not a list -- check *-list show*")
+
         #TODO: add to lists
-        elif(message.author.name in self.users_selected.keys() and (
-                message.content.startswith(self._LIST_ADD_CMD) or message.content.startswith(self._LIST_REMOVE_CMD)
-            )
-        ):
+        elif(message.author.name in self.users_selected.keys()):
             if(message.content.startswith(self._LIST_ADD_CMD)):
                 self.users_selected[message.author.name].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
-            elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-                await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
-                reply_message = await message.channel.wait_for('message')
-                while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
-                    reply_message = await message.channel.wait_for('message')
+            # elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+            #     await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
+            #     reply_message = await message.channel.wait_for('message')
+            #     while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
+            #         reply_message = await message.channel.wait_for('message')
 
-                if reply_message.content == 'yes':
-                    self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
-                    await reply_message.add_reaction("\U00002705")
-                else:
-                    await reply_message.add_reaction("\U00002705")
+            #     if reply_message.content == 'yes':
+            #         self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
+            #         await reply_message.add_reaction("\U00002705")
+            #     else:
+            #         await reply_message.add_reaction("\U00002705")
 
 
         #****end List commands****
