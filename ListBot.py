@@ -26,9 +26,6 @@ class List:
     def remove_item(self, item_index):
         return self.items.pop(item_index)
 
-    def remove_item(self, item):
-        return self.items.remove(item)
-
     def get_item(self, item_index):
         return self.items[item_index]
 
