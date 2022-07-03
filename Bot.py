@@ -371,6 +371,7 @@ class MyClient(discord.Client):
                     self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
                     await reply_message.add_reaction("\U00002705")
                     self.r.lset("discord_lists", index, self.lists[index].to_string())
+                    await message.channel.send(self.lists[index].to_output())
                 else:
                     await reply_message.add_reaction("\U00002705")
 
