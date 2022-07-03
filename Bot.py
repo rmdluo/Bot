@@ -347,6 +347,7 @@ class MyClient(discord.Client):
 
         elif(message.author.name in self.users_adding_list):
             if(message.content.startswith("--stop")):
+                await message.channel.send(self.users_adding_list[message.author.name].to_output())
                 del self.users_adding_list[message.author.name]
             elif(message.content.startswith("-")):
                 self.users_adding_list[message.author.name].add_item(message.content[1:])
