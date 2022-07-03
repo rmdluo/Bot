@@ -85,6 +85,7 @@ class MyClient(discord.Client):
         self._LIST_CREATE_CMD = "-list create"
         self._LIST_SHOW_CMD = "-list show"
         self._LIST_SELECT_CMD = "-list select "
+        self._LIST_DESELECT_CMD = "-list deselect"
         self._LIST_DELETE_CMD = "-list delete "
         self._LIST_ADD_CMD = "++"
         self._LIST_REMOVE_CMD = "--"
@@ -329,7 +330,7 @@ class MyClient(discord.Client):
                 try:
                     await message.channel.send(self.lists[int(arg) - 1].to_output())
                 except ValueError:
-                    await message.channel.send("Invalid argument")
+                    await message.channel.send("Not a list -- check *-list show*")
             
 
         #TODO: delete lists
@@ -352,21 +353,39 @@ class MyClient(discord.Client):
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
+        elif(message.content.startswith(self._LIST_DESELECT_CMD)):
+            if(message.author.name in self.users_selected.keys()):
+                index = self.users_selected[message.author.name]
+                await message.channel.send(self.lists[index].to_output())
+                del self.users_selected[message.author.name]
+            else:
+                await message.channel.send("No list selected -- use *-list select {list number}*")
+
+
         #TODO: add to lists
-        elif(message.author.name in self.users_selected.keys()):
-            if(message.content.startswith(self._LIST_ADD_CMD)):
+        elif(message.content.startswith(self._LIST_ADD_CMD)):
+            if(message.author.name in self.users_selected.keys()):
                 index = self.users_selected[message.author.name]
                 self.lists[index].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
-            elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-                await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
+            else:
+                await message.channel.send("Please select a list first -- *-list select {list number}*")
+                
+        elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+            if(message.author.name in self.users_selected.keys()):
+                await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "? Yes/No")
                 reply_message = await self.wait_for('message')
 
-                while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
-                    reply_message = await self.wait_for('message')
+                def check(sent_message):
+                    return sent_message.author.name != message.author.name or (sent_message.content.lower() != "yes" and sent_message.content.lower() != "no")
 
-                if reply_message.content == 'yes':
+                reply_message = await self.wait_for('message', check=check)
+
+                # while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
+                #     reply_message = await self.wait_for('message')
+
+                if reply_message.content.lower() == 'yes':
                     index = self.users_selected[message.author.name]
                     self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
                     await reply_message.add_reaction("\U00002705")
@@ -374,6 +393,9 @@ class MyClient(discord.Client):
                     await message.channel.send(self.lists[index].to_output())
                 else:
                     await reply_message.add_reaction("\U00002705")
+            else:
+                await message.channel.send("Please select a list first -- *-list select {list number}*")
+
 
 
         #****end List commands****
