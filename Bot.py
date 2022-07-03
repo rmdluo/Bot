@@ -345,7 +345,7 @@ class MyClient(discord.Client):
             await message.channel.send("Enter the items you want to add using the following format: \"-{item}\". When you're done, please send \"--stop\".")
             self.users_adding_list[message.author.name] = self.lists[int(message.content[self._LIST_ADD_CMD])]
 
-        elif(message.author.name in self.users_adding_list):
+        elif(message.author.name in self.users_adding_list.keys()):
             if(message.content.startswith("--stop")):
                 await message.channel.send(self.users_adding_list[message.author.name].to_output())
                 del self.users_adding_list[message.author.name]
