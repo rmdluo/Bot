@@ -376,16 +376,17 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_REMOVE_CMD)):
             if(message.author.name in self.users_selected.keys()):
                 try:
-                    await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "? Yes/No")
-                    reply_message = await self.wait_for('message')
+                    await message.channel.send("Delete \"" + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "\"? Yes/No")
 
-                    def check(sent_message):
-                        return sent_message.author.name != message.author.name or (sent_message.content.lower() != "yes" and sent_message.content.lower() != "no")
+                    def check(m):
+                        return m.author.name == message.author.name and (m.content.lower() == "yes" or m.content.lower() == "no")
 
-                    # reply_message = await self.wait_for('message', check=check)
+                    reply_message = await self.wait_for('message', check=check)
 
-                    while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
-                        reply_message = await self.wait_for('message')
+                    # reply_message = await self.wait_for('message')
+
+                    # while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
+                    #     reply_message = await self.wait_for('message')
 
                     if reply_message.content.lower() == 'yes':
                         index = self.users_selected[message.author.name]
