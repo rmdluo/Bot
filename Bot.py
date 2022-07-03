@@ -346,9 +346,10 @@ class MyClient(discord.Client):
             if(name == ""):
                 await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
                 name = await self.wait_for("message", check=check_name)
+                name = name[2:]
             
             l = ListBot.List(
-                                    message.content[2:],
+                                    name,
                                     message.author.display_name,
                                     items=self.users_creating_list[message.author.display_name]
                                 )
