@@ -95,7 +95,7 @@ class MyClient(discord.Client):
     async def on_ready(self):
         await self.change_presence(activity=discord.Activity(name='!help', type=discord.ActivityType.listening))
         print(f'We have logged in as {self.user} (ID: {self.user.id})')
-    
+
     #****help functions****
     async def embed(self, channel):
         embed=discord.Embed(title="Bot",
@@ -360,12 +360,11 @@ class MyClient(discord.Client):
                 await message.add_reaction("\U00002705")
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
             elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-
                 await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
-                reply_message = await message.channel.wait_for('message')
-                
+                reply_message = await self.wait_for('message')
+
                 while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
-                    reply_message = await message.channel.wait_for('message')
+                    reply_message = await self.wait_for('message')
 
                 if reply_message.content == 'yes':
                     self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
