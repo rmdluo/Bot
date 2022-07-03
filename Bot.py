@@ -360,9 +360,8 @@ class MyClient(discord.Client):
                 if reply_message.content == 'yes':
                     self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
                     await reply_message.add_reaction("\U00002705")
-                    await message.channel.send('Deleted')
                 else:
-                    await message.channel.send('Alright')
+                    await reply_message.add_reaction("\U00002705")
 
 
         #****end List commands****
