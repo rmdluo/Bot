@@ -1,7 +1,6 @@
 import keep_alive
 import os
 import Bot
-import redis
 
 client = Bot.MyClient()
 

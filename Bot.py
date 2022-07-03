@@ -345,7 +345,7 @@ class MyClient(discord.Client):
         #TODO: alter lists
         #TODO: add to lists
         elif(message.author.name in self.users_selected.keys() and (
-                message.content.startswith("++") or message.content.startswith("--")
+                message.content.startswith(self._LIST_ADD_CMD) or message.content.startswith(self._LIST_REMOVE_CMD)
             )
         ):
             if(message.content.startswith(self._LIST_ADD_CMD)):
@@ -355,7 +355,7 @@ class MyClient(discord.Client):
                 await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
                 reply_message = await message.channel.wait_for('message')
                 while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
-                    reply_message = await message.channel.wait_for('message', timeout=15.0)
+                    reply_message = await message.channel.wait_for('message')
 
                 if reply_message.content == 'yes':
                     self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
