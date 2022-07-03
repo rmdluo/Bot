@@ -5,6 +5,7 @@ from discord.ext import tasks
 import redis
 from httplib2 import Http
 import threading
+import asyncio
 
 import MACDTrader
 import WeatherBot
@@ -86,8 +87,9 @@ class MyClient(discord.Client):
         self._LIST_SHOW_CMD = "-list show"
         self._LIST_SELECT_CMD = "-list select "
         self._LIST_DELETE_CMD = "-list delete "
-        self._LIST_ADD_CMD = "-list add "
-        self._LIST_REMOVE_CMD = "-list remove "
+        self._LIST_ADD_CMD = "++ "
+        self._LIST_REMOVE_CMD = "--"
+        self._LIST_MODIFY_CMD = "+-"
 
         self._HELP_CMD = "!help"
 
@@ -327,6 +329,7 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_SELECT_CMD)):
             try:
                 await message.channel.send(self.lists[int(message.content[len(self._LIST_SELECT_CMD):]) - 1].to_output())
+                self.users_selected[message.author.name] = self.lists[int(message.content[len(self._LIST_SELECT_CMD):]) - 1]
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
@@ -341,17 +344,26 @@ class MyClient(discord.Client):
 
         #TODO: alter lists
         #TODO: add to lists
-        elif(message.content.startswith(self._LIST_ADD_CMD)):
-            await message.channel.send("Enter the items you want to add using the following format: \"-{item}\". When you're done, please send \"--stop\".")
-            self.users_adding_list[message.author.name] = self.lists[int(message.content[len(self._LIST_ADD_CMD):])]
-
-        elif(message.author.name in self.users_adding_list.keys()):
-            if(message.content.startswith("--stop")):
-                await message.channel.send(self.users_adding_list[message.author.name].to_output())
-                del self.users_adding_list[message.author.name]
-            elif(message.content.startswith("-")):
-                self.users_adding_list[message.author.name].add_item(message.content[1:])
+        elif(message.author.name in self.users_selected.keys() and (
+                message.content.startswith("++") or message.content.startswith("--")
+            )
+        ):
+            if(message.content.startswith(self._LIST_ADD_CMD)):
+                self.users_selected[message.author.name].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
+            elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+                await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
+                reply_message = await message.channel.wait_for('message')
+                while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
+                    reply_message = await message.channel.wait_for('message', timeout=15.0)
+
+                if reply_message.content == 'yes':
+                    self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
+                    await reply_message.add_reaction("\U00002705")
+                    await message.channel.send('Deleted')
+                else:
+                    await message.channel.send('Alright')
+
 
         #****end List commands****
         
