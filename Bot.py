@@ -435,7 +435,7 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_MODIFY_CMD)):
             if(message.author.display_name in self.users_selected.keys()):
                 message_info = message.content[len(self._LIST_MODIFY_CMD):].split(" ")
-                self.lists[self.users_selected[message.author.display_name]][int(message_info[0]) - 1] = message_info[1]
+                self.lists[self.users_selected[message.author.display_name]].change_item(int(message_info[0]) - 1, message_info[1])
                 await message.add_reaction("\U00002705")
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
