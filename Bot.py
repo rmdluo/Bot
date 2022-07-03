@@ -339,7 +339,7 @@ class MyClient(discord.Client):
             try:
                 list_index = int(message.content[len(self._LIST_SELECT_CMD):]) - 1
                 await message.channel.send(self.lists[list_index].to_output())
-                self.users_selected[message.author.name] = self.lists[list_index]
+                self.users_selected[message.author.name] = list_index
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
@@ -347,7 +347,7 @@ class MyClient(discord.Client):
         elif(message.author.name in self.users_selected.keys()):
             await message.add_reaction("\U00002705")
             if(message.content.startswith(self._LIST_ADD_CMD)):
-                self.users_selected[message.author.name].add_item(message.content[len(self._LIST_ADD_CMD):])
+                self.lists[self.users_selected[message.author.name]].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
             # elif(message.content.startswith(self._LIST_REMOVE_CMD)):
             #     await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
