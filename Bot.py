@@ -294,28 +294,28 @@ class MyClient(discord.Client):
         
         elif(message.content.startswith(self._LIST_CREATE_CMD)):
             await message.channel.send("Enter the items for your list using the following format: \"-{item}\". When you're done, please send \"--stop\".")
-            self.users_creating_list[message.author.name] = []
+            self.users_creating_list[message.author.display_name] = []
 
-        elif(message.author.name in self.users_finishing_list):
+        elif(message.author.display_name in self.users_finishing_list):
             if(message.content.startswith("--")):
                 l = ListBot.List(
                                     message.content[2:],
-                                    message.author.name,
-                                    items=self.users_creating_list[message.author.name]
+                                    message.author.display_name,
+                                    items=self.users_creating_list[message.author.display_name]
                                 )
                 self.lists.append(l)
                 self.r.lpush("discord_lists", l.to_string())
                 await message.channel.send(l.to_output())
 
-                self.users_finishing_list.remove(message.author.name)
-                del self.users_creating_list[message.author.name]
+                self.users_finishing_list.remove(message.author.display_name)
+                del self.users_creating_list[message.author.display_name]
         
-        elif(message.author.name in self.users_creating_list.keys()):
+        elif(message.author.display_name in self.users_creating_list.keys()):
             if(message.content.startswith("--stop")):
                 await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
-                self.users_finishing_list.append(message.author.name)
+                self.users_finishing_list.append(message.author.display_name)
             elif(message.content.startswith("-")):
-                self.users_creating_list[message.author.name].append(message.content[1:])
+                self.users_creating_list[message.author.display_name].append(message.content[1:])
                 await message.add_reaction("\U00002705")
 
         #TODO: display lists
@@ -350,23 +350,23 @@ class MyClient(discord.Client):
             try:
                 list_index = int(message.content[len(self._LIST_SELECT_CMD):]) - 1
                 await message.channel.send(self.lists[list_index].to_output())
-                self.users_selected[message.author.name] = list_index
+                self.users_selected[message.author.display_name] = list_index
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
         elif(message.content.startswith(self._LIST_DESELECT_CMD)):
-            if(message.author.name in self.users_selected.keys()):
-                index = self.users_selected[message.author.name]
+            if(message.author.display_name in self.users_selected.keys()):
+                index = self.users_selected[message.author.display_name]
                 await message.channel.send(self.lists[index].to_output())
-                del self.users_selected[message.author.name]
+                del self.users_selected[message.author.display_name]
             else:
                 await message.channel.send("No list selected -- use *-list select {list number}*")
 
 
         #TODO: add to lists
         elif(message.content.startswith(self._LIST_ADD_CMD)):
-            if(message.author.name in self.users_selected.keys()):
-                index = self.users_selected[message.author.name]
+            if(message.author.display_name in self.users_selected.keys()):
+                index = self.users_selected[message.author.display_name]
                 self.lists[index].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
@@ -374,22 +374,22 @@ class MyClient(discord.Client):
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
                 
         elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-            if(message.author.name in self.users_selected.keys()):
+            if(message.author.display_name in self.users_selected.keys()):
                 try:
-                    await message.channel.send("Delete \"" + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "\"? Yes/No")
+                    await message.channel.send("Delete \"" + self.lists[self.users_selected[message.author.display_name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "\"? Yes/No")
 
                     def check(m):
-                        return m.author.name == message.author.name and (m.content.lower() == "yes" or m.content.lower() == "no")
+                        return m.author.display_name == message.author.display_name and (m.content.lower() == "yes" or m.content.lower() == "no")
 
                     reply_message = await self.wait_for('message', check=check)
 
                     # reply_message = await self.wait_for('message')
 
-                    # while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
+                    # while(reply_message.author.display_name != message.author.display_name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
                     #     reply_message = await self.wait_for('message')
 
                     if reply_message.content.lower() == 'yes':
-                        index = self.users_selected[message.author.name]
+                        index = self.users_selected[message.author.display_name]
                         self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
                         await reply_message.add_reaction("\U00002705")
                         self.r.lset("discord_lists", index, self.lists[index].to_string())
