@@ -367,7 +367,8 @@ class MyClient(discord.Client):
                     reply_message = await self.wait_for('message')
 
                 if reply_message.content == 'yes':
-                    self.lists[self.users_selected[message.author.name]].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
+                    index = self.users_selected[message.author.name]
+                    self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
                     await reply_message.add_reaction("\U00002705")
                     self.r.lset("discord_lists", index, self.lists[index].to_string())
                 else:
