@@ -62,7 +62,9 @@ class MyClient(discord.Client):
         self.lists = []
 
         if(self.r.exists("discord_lists")):
-            self.lists = [ListBot.from_string(item.decode("utf-8")) for item in self.r.lrange("discord_lists", 0, -1)]
+            self.lists = []
+            for item in self.r.lrange("discord_lists", 0, -1):
+                self.lists.append(ListBot.from_string(item.decode("utf-8")))
         
         self.users_creating_list = {}
         self.users_finishing_list = []
@@ -143,6 +145,35 @@ class MyClient(discord.Client):
         
         embed.add_field(name=" - ?weather check saved",
                         value="Displays a list of saved locations.",
+                        inline=False)
+
+        embed.add_field(name="__**ListBot**__",
+                        value="Creates lists",
+                        inline=False)
+
+        embed.add_field(name=" - -list create",
+                        value="Activates list creation",
+                        inline=False)
+
+        embed.add_field(name=" - -list show <(optional) list num>",
+                        value="(Default/Input = all) Shows all lists\n(Input = number) Shows the inputted list",
+                        inline=False)
+
+        embed.add_field(name=" - -list delete <list num>",
+                        value="Deletes the list num-th list",
+                        inline=False)
+
+        embed.add_field(name=" - -list select <list num>",
+                        value="""
+                                Selects the list num-th list\n
+                                ++<item> - adds item to selected list\n
+                                --<item number> - removes the item from the selected list\n
+                                +-<item number> <item> - changes the item number to the new item
+                              """,
+                        inline=False)
+
+        embed.add_field(name=" - -list deselect",
+                        value="Deselects the list num-th list",
                         inline=False)
                 
         await channel.send(embed=embed)
@@ -401,7 +432,13 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
 
-
+        elif(message.content.startswith(self._LIST_MODIFY_CMD)):
+            if(message.author.display_name in self.users_selected.keys()):
+                message_info = message.content[len(self._LIST_MODIFY_CMD):].split(" ")
+                self.lists[message_info[0] - 1] = message_info[1]
+                await message.add_reaction("\U00002705")
+            else:
+                await message.channel.send("Please select a list first -- *-list select {list number}*")
 
         #****end List commands****
         
