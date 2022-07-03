@@ -335,7 +335,9 @@ class MyClient(discord.Client):
         #TODO: delete lists
         elif(message.content.startswith(self._LIST_DELETE_CMD)):
             try:
-                l = self.lists.pop(int(message.content[len(self._LIST_DELETE_CMD):]) - 1)
+                index = int(message.content[len(self._LIST_DELETE_CMD):]) - 1
+                l = self.lists.pop(index)
+                self.r.lrem("discord_lists", 0, l.to_string())
                 await message.channel.send("List deleted:")
                 await message.channel.send(l.to_output())
             except IndexError:
@@ -353,8 +355,10 @@ class MyClient(discord.Client):
         #TODO: add to lists
         elif(message.author.name in self.users_selected.keys()):
             if(message.content.startswith(self._LIST_ADD_CMD)):
-                self.lists[self.users_selected[message.author.name]].add_item(message.content[len(self._LIST_ADD_CMD):])
+                index = self.users_selected[message.author.name]
+                self.lists[index].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
+                self.r.lset("discord_lists", index, self.lists[index].to_string())
             elif(message.content.startswith(self._LIST_REMOVE_CMD)):
                 await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
                 reply_message = await message.channel.wait_for('message')
@@ -364,6 +368,7 @@ class MyClient(discord.Client):
                 if reply_message.content == 'yes':
                     self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
                     await reply_message.add_reaction("\U00002705")
+                    self.r.lset("discord_lists", index, self.lists[index].to_string())
                 else:
                     await reply_message.add_reaction("\U00002705")
 
