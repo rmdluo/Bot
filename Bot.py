@@ -318,12 +318,19 @@ class MyClient(discord.Client):
 
         #TODO: display lists
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
-            info_str = ""; i = 1
-            for list in self.lists:
-                info_str += str(i) + ". " + list.get_display_string() + "\n"
-                i += 1
-
-            await message.channel.send(info_str)
+            arg = message.content[len(self._LIST_SHOW_CMD)].lower()
+            if(arg == "" or arg == "all"):
+                info_str = ""; i = 1
+                for list in self.lists:
+                    info_str += str(i) + ". " + list.get_display_string() + "\n"
+                    i += 1
+                await message.channel.send(info_str)
+            else:
+                try:
+                    await message.channel.send(self.lists[int(arg)].to_output)
+                except ValueError:
+                    await message.channel.send("Invalid argument")
+            
 
         #TODO: delete lists
         elif(message.content.startswith(self._LIST_DELETE_CMD)):
@@ -348,17 +355,17 @@ class MyClient(discord.Client):
             if(message.content.startswith(self._LIST_ADD_CMD)):
                 self.lists[self.users_selected[message.author.name]].add_item(message.content[len(self._LIST_ADD_CMD):])
                 await message.add_reaction("\U00002705")
-            # elif(message.content.startswith(self._LIST_REMOVE_CMD)):
-            #     await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
-            #     reply_message = await message.channel.wait_for('message')
-            #     while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
-            #         reply_message = await message.channel.wait_for('message')
+            elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+                await message.channel.send("Delete " + self.users_selected[message.author.name].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "?")
+                reply_message = await message.channel.wait_for('message')
+                while(reply_message.author.name != message.author.name or (reply_message.content != "yes" and reply_message.content != "no")):
+                    reply_message = await message.channel.wait_for('message')
 
-            #     if reply_message.content == 'yes':
-            #         self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
-            #         await reply_message.add_reaction("\U00002705")
-            #     else:
-            #         await reply_message.add_reaction("\U00002705")
+                if reply_message.content == 'yes':
+                    self.users_selected[message.author.name].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):] - 1))
+                    await reply_message.add_reaction("\U00002705")
+                else:
+                    await reply_message.add_reaction("\U00002705")
 
 
         #****end List commands****
