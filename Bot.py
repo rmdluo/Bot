@@ -86,7 +86,7 @@ class MyClient(discord.Client):
         self._LIST_SHOW_CMD = "-list show"
         self._LIST_SELECT_CMD = "-list select "
         self._LIST_DELETE_CMD = "-list delete "
-        self._LIST_ADD_CMD = "++ "
+        self._LIST_ADD_CMD = "++"
         self._LIST_REMOVE_CMD = "--"
         self._LIST_MODIFY_CMD = "+-"
 
