@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import os
 import random
 import discord
@@ -374,25 +375,28 @@ class MyClient(discord.Client):
                 
         elif(message.content.startswith(self._LIST_REMOVE_CMD)):
             if(message.author.name in self.users_selected.keys()):
-                await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "? Yes/No")
-                reply_message = await self.wait_for('message')
+                try:
+                    await message.channel.send("Delete " + self.lists[self.users_selected[message.author.name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "? Yes/No")
+                    reply_message = await self.wait_for('message')
 
-                def check(sent_message):
-                    return sent_message.author.name != message.author.name or (sent_message.content.lower() != "yes" and sent_message.content.lower() != "no")
+                    def check(sent_message):
+                        return sent_message.author.name != message.author.name or (sent_message.content.lower() != "yes" and sent_message.content.lower() != "no")
 
-                reply_message = await self.wait_for('message', check=check)
+                    # reply_message = await self.wait_for('message', check=check)
 
-                # while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
-                #     reply_message = await self.wait_for('message')
+                    while(reply_message.author.name != message.author.name or (reply_message.content.lower() != "yes" and reply_message.content.lower() != "no")):
+                        reply_message = await self.wait_for('message')
 
-                if reply_message.content.lower() == 'yes':
-                    index = self.users_selected[message.author.name]
-                    self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
-                    await reply_message.add_reaction("\U00002705")
-                    self.r.lset("discord_lists", index, self.lists[index].to_string())
-                    await message.channel.send(self.lists[index].to_output())
-                else:
-                    await reply_message.add_reaction("\U00002705")
+                    if reply_message.content.lower() == 'yes':
+                        index = self.users_selected[message.author.name]
+                        self.lists[index].remove_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1)
+                        await reply_message.add_reaction("\U00002705")
+                        self.r.lset("discord_lists", index, self.lists[index].to_string())
+                        await message.channel.send(self.lists[index].to_output())
+                    else:
+                        await reply_message.add_reaction("\U00002705")
+                except ValueError:
+                    await message.channel.send("Please enter the item number, not the item")
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
 
