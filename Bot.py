@@ -354,7 +354,7 @@ class MyClient(discord.Client):
                                     items=self.users_creating_list[message.author.display_name]
                                 )
             self.lists.append(l)
-            self.r.lpush("discord_lists", l.to_string())
+            self.r.rpush("discord_lists", l.to_string())
             await message.channel.send(l.to_output())    
 
 
@@ -435,7 +435,7 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
                 
-        elif(message.content.startswith(self._LIST_REMOVE_CMD)):
+        elif(message.content.startswith(self._LIST_REMOVE_CMD) and not message.author.display_name in self.users_creating_list.keys()):
             if(message.author.display_name in self.users_selected.keys()):
                 try:
                     await message.channel.send("Delete \"" + self.lists[self.users_selected[message.author.display_name]].get_item(int(message.content[len(self._LIST_REMOVE_CMD):]) - 1) + "\"? Yes/No")
