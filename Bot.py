@@ -327,7 +327,7 @@ class MyClient(discord.Client):
                 await message.channel.send(info_str)
             else:
                 try:
-                    await message.channel.send(self.lists[int(arg)].to_output)
+                    await message.channel.send(self.lists[int(arg) - 1].to_output())
                 except ValueError:
                     await message.channel.send("Invalid argument")
             
