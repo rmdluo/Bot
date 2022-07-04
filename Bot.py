@@ -427,7 +427,7 @@ class MyClient(discord.Client):
                 await message.channel.send("No list selected -- use *-list select {list number}*")
 
         # swap list items
-        elif(message.content.contains(self._LIST_SWAP_CMD) and message.author.display_name in self.users_selected.keys()):
+        elif(message.content.__contains__(self._LIST_SWAP_CMD) and message.author.display_name in self.users_selected.keys()):
             try:
                 index = self.users_selected[message.author.display_name]
                 items_indices = [int(s) - 1 for s in message.content.split(self._LIST_SWAP_CMD)]
