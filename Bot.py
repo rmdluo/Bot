@@ -93,6 +93,7 @@ class MyClient(discord.Client):
         self._LIST_ADD_CMD = "++"
         self._LIST_REMOVE_CMD = "--"
         self._LIST_MODIFY_CMD = "+-"
+        self._LIST_SWAP_CMD = "="
 
         self._HELP_CMD = "!help"
 
@@ -425,8 +426,15 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("No list selected -- use *-list select {list number}*")
 
+        # swap list items
+        elif(message.content.startswith(self._LIST_SWAP_CMD)):
+            if(message.author.display_name in self.users_selected.keys()):
+                index = self.users_selected[message.author.display_name]
+                items_indices = [int(s) for s in message.content[len(self._LIST_SWAP_CMD):].split(" ")]
+                self.lists[index].swap_items(items_indices[0], items_indices[1])
+                self.r.lset("discord_lists", index, self.lists[index].to_string())
 
-        #TODO: add to lists
+        # add list item
         elif(message.content.startswith(self._LIST_ADD_CMD)):
             if(message.author.display_name in self.users_selected.keys()):
                 index = self.users_selected[message.author.display_name]
@@ -436,6 +444,7 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
                 
+        # delete list item
         elif(message.content.startswith(self._LIST_REMOVE_CMD) and not message.author.display_name in self.users_creating_list.keys()):
             if(message.author.display_name in self.users_selected.keys()):
                 try:
@@ -464,6 +473,7 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send("Please select a list first -- *-list select {list number}*")
 
+        # modify list item
         elif(message.content.startswith(self._LIST_MODIFY_CMD)):
             if(message.author.display_name in self.users_selected.keys()):
                 message_info = message.content[len(self._LIST_MODIFY_CMD):].split(" ")

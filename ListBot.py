@@ -17,6 +17,11 @@ class List:
     def change_item(self, item_index, item):
         self.items[item_index] = item
 
+    def swap_items(self, item_index1, item_index2):
+        temp = self.items[item_index1]
+        self.items[item_index1] = self.items[item_index2]
+        self.items[item_index2] = temp
+
     def turn_ordered(self):
         self.ordered = True
 
