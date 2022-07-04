@@ -336,7 +336,7 @@ class MyClient(discord.Client):
                 if(item.content.startswith("-")):
                     self.users_creating_list[message.author.display_name].append(item.content[1:])
                     await item.add_reaction("\U00002705")
-                    item = await self.wait_for("message", check=check_author)
+                item = await self.wait_for("message", check=check_author)
 
             def check_name(m):
                 return m.content.startswith("--") and m.author.display_name == message.author.display_name
