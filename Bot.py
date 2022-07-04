@@ -427,13 +427,15 @@ class MyClient(discord.Client):
                 await message.channel.send("No list selected -- use *-list select {list number}*")
 
         # swap list items
-        elif(message.content.startswith(self._LIST_SWAP_CMD)):
-            if(message.author.display_name in self.users_selected.keys()):
+        elif(message.content.contains(self._LIST_SWAP_CMD) and message.author.display_name in self.users_selected.keys()):
+            try:
                 index = self.users_selected[message.author.display_name]
                 items_indices = [int(s) - 1 for s in message.content.split(self._LIST_SWAP_CMD)]
                 self.lists[index].swap_items(items_indices[0], items_indices[1])
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
-                await reply_message.add_reaction("\U00002705")
+                await message.add_reaction("\U00002705")
+            except ValueError:
+                await message.channel.send("Please use the following format: {item number 1}={item number 2}")
 
         # add list item
         elif(message.content.startswith(self._LIST_ADD_CMD)):
