@@ -357,6 +357,7 @@ class MyClient(discord.Client):
             self.r.rpush("discord_lists", l.to_string())
             await message.channel.send(l.to_output())    
 
+            del self.users_creating_list[message.author.display_name]
 
         # elif(message.author.display_name in self.users_finishing_list):
         #     if(message.content.startswith("--")):
