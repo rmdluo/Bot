@@ -430,9 +430,10 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_SWAP_CMD)):
             if(message.author.display_name in self.users_selected.keys()):
                 index = self.users_selected[message.author.display_name]
-                items_indices = [int(s) for s in message.content[len(self._LIST_SWAP_CMD):].split(" ")]
+                items_indices = [int(s) - 1 for s in message.content.split(self._LIST_SWAP_CMD)]
                 self.lists[index].swap_items(items_indices[0], items_indices[1])
                 self.r.lset("discord_lists", index, self.lists[index].to_string())
+                await reply_message.add_reaction("\U00002705")
 
         # add list item
         elif(message.content.startswith(self._LIST_ADD_CMD)):
