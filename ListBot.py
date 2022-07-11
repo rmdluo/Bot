@@ -59,7 +59,7 @@ class List:
         return self.name + " by " + self.author
         
 def from_string(str):
-    info = str.split(",==")
+    info = str.split(", ")
 
     if(info[2] == "True"):
         ordered = True
