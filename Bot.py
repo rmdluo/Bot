@@ -418,7 +418,7 @@ class MyClient(discord.Client):
             except IndexError:
                 await message.channel.send("not a list -- check *-list show*")
 
-        elif(message.content.startswith(self._LIST_DESELECT_CMD)):
+        elif(message.content.startswith(self._LIST_DESELECT_CMD) or (message.content=="--stop" and message.author.display_name in self.users_selected.keys())):
             if(message.author.display_name in self.users_selected.keys()):
                 index = self.users_selected[message.author.display_name]
                 await message.channel.send(self.lists[index].to_output())
