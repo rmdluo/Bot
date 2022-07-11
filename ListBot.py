@@ -48,10 +48,10 @@ class List:
 
     def to_string(self):
         info_str = ""
-        info_str += self.name + ", " + self.author + ", "+ str(self.ordered)
+        info_str += self.name + ",==" + self.author + ",=="+ str(self.ordered)
         
         for i in range(len(self.items)):
-            info_str += ", " + self.items[i]
+            info_str += ",==" + self.items[i]
 
         return info_str
 
@@ -59,7 +59,7 @@ class List:
         return self.name + " by " + self.author
         
 def from_string(str):
-    info = str.split(", ")
+    info = str.split(",==")
 
     if(info[2] == "True"):
         ordered = True
