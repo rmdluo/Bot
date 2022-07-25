@@ -179,10 +179,7 @@ class MyClient(discord.Client):
                 
         await channel.send(embed=embed)
 
-    async def on_message(self, message):
-        if (message.content == "get id"):
-            await message.channel.send(message.author.id)
-        
+    async def on_message(self, message):        
         #****start 8Ball Commands****
 
         if (message.content.startswith(self._8_BALL_BALL_CMD)):
