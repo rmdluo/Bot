@@ -10,7 +10,6 @@ import asyncio
 
 import MACDTrader
 import WeatherBot
-import TrackBot
 import ListBot
 
 class MyClient(discord.Client):
