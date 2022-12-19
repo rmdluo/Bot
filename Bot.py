@@ -22,12 +22,7 @@ class MyClient(discord.Client):
 
         if(self.r.exists("products")):
             self.products = self.r.lrange("products", 0, -1)
-        
-        for index in range(len(self.products)):
-            self.products[index] = self.products[index].decode("utf-8")
-
-        self.trader = MACDTrader.MACDTrader(products=self.products)
-        
+                
         self.weather = WeatherBot.WeatherBot()
         
         self.saved_locations = {}
@@ -68,10 +63,6 @@ class MyClient(discord.Client):
         self.users_creating_list = {}
         self.users_finishing_list = []
         self.users_selected = {}
-
-        self._MACD_ADD_CMD = "$signal add "
-        self._MACD_REM_CMD_1 = "$signal rem "
-        self._MACD_REM_CMD_2 = "$signal remove "
 
         self._8_BALL_ADD_CMD = "8!add "
         self._8_BALL_REM_CMD = "8!rem "
@@ -346,7 +337,8 @@ class MyClient(discord.Client):
             if(name == ""):
                 await message.channel.send("What is the name of your list? Enter it as \"--{name}\".")
                 name = await self.wait_for("message", check=check_name)
-                name = name[2:]
+                await name.add_reaction("\U00002705")
+                name = name.content[2:]
             
             l = ListBot.List(
                                     name,
