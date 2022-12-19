@@ -8,7 +8,6 @@ from httplib2 import Http
 import threading
 import asyncio
 
-import MACDTrader
 import WeatherBot
 import ListBot
 
