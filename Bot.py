@@ -376,11 +376,14 @@ class MyClient(discord.Client):
         elif(message.content.startswith(self._LIST_SHOW_CMD)):
             arg = message.content[len(self._LIST_SHOW_CMD):].lower()
             if(arg == "" or arg == "all"):
-                info_str = ""; i = 1
-                for list in self.lists:
-                    info_str += str(i) + ". " + list.get_display_string() + "\n"
-                    i += 1
-                await message.channel.send(info_str)
+                if(len(self.lists) == 0):
+                    await message.channel.send("No lists. Create one with `-list create`")
+                else:
+                    info_str = ""; i = 1
+                    for list in self.lists:
+                        info_str += str(i) + ". " + list.get_display_string() + "\n"
+                        i += 1
+                    await message.channel.send(info_str)
             else:
                 try:
                     await message.channel.send(self.lists[int(arg) - 1].to_output())
