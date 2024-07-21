@@ -7,4 +7,8 @@ client = Bot.MyClient()
 #keeps the bot running on the server
 keep_alive.keep_alive()
 
-client.run(os.environ['token'])
+try:
+    client.run(os.environ['token'])
+except:
+    keep_alive.kill()
+    exit(1)
